@@ -1,0 +1,68 @@
+{
+  "env": {
+    "browser": true,
+    "es6": true,
+    "node": true
+  },
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "prettier"
+  ],
+  "parser": "babel-eslint",
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    },
+    "ecmaVersion": 2018,
+    "sourceType": "module"
+  },
+  "plugins": [
+    "react",
+    "prettier"
+  ],
+  "rules": {
+    "indent": [
+      "error",
+      2
+    ],
+    "linebreak-style": [
+      "error",
+      "unix"
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "prettier/prettier": [
+      "error"
+    ],
+    "react/jsx-filename-extension": [
+      1,
+      {
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
+      }
+    ],
+    "react/prefer-es6-class": 2,
+    "react/prefer-stateless-function": 0,
+    "no-use-before-define": 0,
+    "no-param-reassign": 0,
+    "import/no-extraneous-dependencies": 1,
+    "react/no-unused-prop-types": 1,
+    "react/boolean-prop-naming": 2,
+    "react/sort-prop-types": 2,
+    "react/jsx-one-expression-per-line": 0,
+    "react/destructuring-assignment": 0,
+    "no-unused-vars": 1,
+    "no-nested-ternary": 0,
+    "prefer-destructuring": 0,
+    "object-curly-newline": 0
+  }
+}
