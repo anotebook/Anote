@@ -1,0 +1,3 @@
+# Anote
+
+Keep yourself organised
