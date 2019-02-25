@@ -33,7 +33,8 @@ app.use(express.urlencoded({ extended: true }));
  */
 const verifyUser = async token => {
   // Verify the integrity of id token recieved
-  // If verification fails, it will throw an error which is then handled by the caller
+  /* If verification fails, it will throw an error
+  which is then handled by the caller */
   const ticket = await client.verifyIdToken({
     idToken: token,
     audience: process.env.REACT_APP_GOOGLE_SIGNIN_CLIENT_ID
@@ -61,6 +62,7 @@ const verifyUser = async token => {
 
 // Connect to our MongoDb database
 MongoClient.connect(mongodbUrl, { useNewUrlParser: true }, (err, db) => {
+  console.log(db);
   if (err) throw err;
   abiertoDb = db.db(DB_NAME);
 });
