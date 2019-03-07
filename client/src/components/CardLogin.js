@@ -5,15 +5,22 @@ import GoogleAuth from './GoogleAuth';
 /* this component shows the login message for the User */
 const CardLogin = () => {
   return (
-    <Card
-      border="light"
-      style={{ width: '350px', backgroundColor: '#cedfef', height: '30%' }}
-      id="Login_Card"
-    >
-      <Card.Body>
-        <Card.Title>PRS Notes</Card.Title>
-        <Card.Text>Keep Yourself Organised</Card.Text>
-        <GoogleAuth id="GoogleAuthBt" text="Sign in with Google" />
+    <Card id="login-card" style={{ width: '360px' }}>
+      <Card.Body
+        style={{
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        <Card.Title>Anote</Card.Title>
+        <Card.Subtitle className="mb-2 text-muted">
+          Keep yourself organised
+        </Card.Subtitle>
+        <Card.Text>
+          Anote is one of the best and simple notes keeping app to keep yourself
+          organised.
+        </Card.Text>
+        <GoogleAuth text="Sign in with Google" />
       </Card.Body>
     </Card>
   );

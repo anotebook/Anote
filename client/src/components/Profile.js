@@ -1,13 +1,20 @@
 import React from 'react';
 import { Jumbotron } from 'react-bootstrap';
 import { FaUser } from 'react-icons/fa';
-import PropTypes, { object } from 'prop-types';
+import PropTypes from 'prop-types';
 
 /* This component shows the Profile of the User */
-
 class Profile extends React.Component {
   static propTypes = {
-    user: PropTypes.instanceOf(object).isRequired
+    user: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      about: PropTypes.string.isRequired,
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      picture: PropTypes.string.isRequired,
+      uid: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    }).isRequired
   };
 
   render() {

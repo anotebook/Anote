@@ -2,166 +2,81 @@
 
 @media screen and (max-width: 575px) {
   #FaUserIcon {
-    display:none;
-    visibility: hidden;   
+    display: none;
+    visibility: hidden;
   }
 }
+
 @media screen and (max-width: 750px) {
   html {
     font-size: 0.8rem;
   }
-  #Login_Card{
+  #login-card {
     width: 250px;
   }
-
 }
 
 @media screen and (max-width: 998px) {
   html {
-    font-size: 1.0rem;
+    font-size: 1rem;
   }
 }
 
 /* hidden class */
-.hidden{
-  display:none;
-  visibility: hidden;   
+.hidden {
+  display: none;
+  visibility: hidden;
 }
-
 
 /* App Header style */
 .Appheader {
-  background-color:#E6E6E6;
+  background-color: #e6e6e6;
   height: none;
-  font-size: 1.1rem ;
+  font-size: 1.1rem;
   color: teal;
 }
 
-
 #FaUserIcon {
- margin-top: 4%;
+  margin-top: 4%;
 }
 
-.headerContainerlogged{
+.headerContainerlogged {
   padding-left: 50px;
 }
-
 
 /*profile page */
 .FaUserProfile {
   margin-top: 0%;
-  margin-right:3%; 
-  height: 40px ;
-  width: 25px; 
- }
-
+  margin-right: 3%;
+  height: 40px;
+  width: 25px;
+}
 
 /*setting page */
- .FaUserSetting {
+.FaUserSetting {
   margin-top: 2%;
-  margin-right:1%; 
-  height: 50px ;
-  width: 30px; 
+  margin-right: 1%;
+  height: 50px;
+  width: 30px;
 }
-
-
-
-/* login message styling */
-#Login_Card{
-  font-style: italic;
-  padding: 1rem;
-  /* margin-left: 37%;*/
-  margin-top: 155px;
-  margin-bottom:150px; 
-  background-color: rgb(230, 232, 240); 
-  border:5px outset rgb(175, 175, 175) ;
-}
-
-
-
 
 /* main-content */
 
 .main-content {
   flex: 1 0 auto;
-  display:flex;
+  display: flex;
+  flex-direction: column;
   justify-content: center;
-  /* align-items: center; */
-  padding:  0%;
-  margin: 0px;
-  background-color:#f2f4f4; 
-  background:  url("/paperlighter.png") no-repeat center center fixed ;
-  background-size: cover;
-}
-
-
-
-/* app Footer */
-
-.AppFooter{
-  height: 45px;
-}
-
-
-/* googleAuth */
-
-
-.GoogleAuthBt{
-  margin-left: 0%;
   align-items: center;
+  padding: 0;
+  margin: 0;
 }
-
-.GoogleAuthBt>button {
-  border-top: 1px solid #3e3f3f;
-   background:#0069ed;
-   background: -webkit-gradient(linear, left top, left bottom, from(#3e779d), to(#65a9d7));
-   background: -webkit-linear-gradient(top, #3e779d, #65a9d7);
-   background: -moz-linear-gradient(top, #3e779d, #65a9d7);
-   background: -ms-linear-gradient(top, #3e779d, #65a9d7);
-   background: -o-linear-gradient(top, #3e779d, #65a9d7);
-   padding: 10px 15px;
-   text-shadow: rgba(0,0,0,.4) 0 1px 0;
-   color: white;
-   border-radius: 45px;
-   box-shadow: 0px 8px 15px rgba(0, 0, 0, 0.1);
-   transition: all 0.3s ease 0s;
-   cursor: pointer;
-   font-size: 1rem;
-   font-family: Georgia, serif;
-   text-decoration: none;
-   vertical-align: middle;
-}
-
-.GoogleAuthBt>button:hover,
-button:focus {
-  background-color: #2EE59D;
-  box-shadow: 0px 15px 20px rgba(46, 229, 157, 0.4);
-  color: #fff;
-  transform: translateY(-7px);
-}
-
-.GoogleAuthBt>button:focus {
-  outline: 1px solid #fff;
-  outline-offset: -4px;
-}
-
-.GoogleAuthBt>button:active {
-  transform: scale(0.99);
-}
-
-
-/* "https://res.cloudinary.com/ellen/image/upload/v1487985971/Profile/paperlighter.png" */  
-
-
-
-
 
 /* NAVBAR  */
 
-
 .sideNav {
   top: 0;
-  left:0;
+  left: 0;
   position: fixed;
   display: flex;
   flex-direction: column;
@@ -172,9 +87,9 @@ button:focus {
 }
 
 .sideNav-item {
-  padding:5px;
+  padding: 5px;
   margin-left: auto;
-  margin-right: auto; 
+  margin-right: auto;
   margin-top: 10px;
   margin-bottom: 10px;
 }
@@ -185,10 +100,10 @@ button:focus {
 }
 
 /*
-  To make the content appears just below the buttons, 
-  We first align the buttons to the center of the screen 
-  and then we make the nested-item to take the half 
-  width of the parent and start this half width from the 
+  To make the content appears just below the buttons,
+  We first align the buttons to the center of the screen
+  and then we make the nested-item to take the half
+  width of the parent and start this half width from the
   back side (so, "align-self: flex-end")
 */
 
@@ -210,18 +125,18 @@ button:focus {
 
 @media (min-width: 800px) {
   .img-hamburger {
-      box-shadow: none;
+    box-shadow: none;
   }
 
   .sideNav {
-      left: 0;
+    left: 0;
   }
 }
 
 /*
   BEM : Block Element Modifier
 
-  placing this modifier above media query will not works 
+  placing this modifier above media query will not works
   as it is over-ridden by the style of the media query
 */
 
@@ -233,16 +148,9 @@ button:focus {
   width: 70px;
 }
 
-.img-hamburger--show-shadow {
-  /* box-shadow: 1px 1px 2px; */
-}
-
 .img-hamburger--hide-shadow {
   box-shadow: none;
 }
-
-
-
 
 /* For the sideNavigation menu and it's item */
 .menu {
@@ -274,7 +182,6 @@ button:focus {
 
 /* SIDENAVIGATION ENDS HERE */
 
-
 /*main-content */
 
 .main-content-with-menu-closed {
@@ -287,7 +194,4 @@ button:focus {
   width: 100%;
   height: 100%;
   padding-left: 250px;
-}
-.main-content-with-logged-out {
-
 }

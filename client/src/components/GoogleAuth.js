@@ -19,7 +19,6 @@ class GoogleAuth extends React.Component {
     changeLoginState: PropTypes.func.isRequired,
     changeUserData: PropTypes.func.isRequired,
     changeVerifyState: PropTypes.func.isRequired,
-    id: PropTypes.string.isRequired,
     loggedIn: PropTypes.bool.isRequired,
     text: PropTypes.string.isRequired,
     verified: PropTypes.bool.isRequired
@@ -36,7 +35,6 @@ class GoogleAuth extends React.Component {
 
   // If login is successful, this function is called
   onLoginSuccess = googleRes => {
-    console.log(googleRes.profileObj);
     // User signed in sucessfully, change login state to `true`
     this.props.changeLoginState(true);
     this.props.changeVerifyState(true);
@@ -56,7 +54,7 @@ class GoogleAuth extends React.Component {
 
         this.props.history.push('/profile');
       })
-      .catch(err => {
+      .catch(() => {
         // Verification error!(Either mongodb or token verification)
         this.props.changeVerifyState(false);
         this.props.changeUserData(null);
@@ -66,18 +64,14 @@ class GoogleAuth extends React.Component {
   };
 
   // If login fails, this function is called
-  onLoginFailure = googleRes => {
-    console.log(googleRes);
-
+  onLoginFailure = () => {
     // Sign in error, set login state to `false`
     this.props.changeLoginState(false);
     this.props.changeUserData(null);
   };
 
   // If logout is successful, this function is called
-  onLogoutSuccess = googleRes => {
-    console.log(googleRes);
-
+  onLogoutSuccess = () => {
     // Logout successful, change login state to `false`
     this.props.changeLoginState(false);
     this.props.changeUserData(null);
@@ -85,10 +79,9 @@ class GoogleAuth extends React.Component {
   };
 
   render() {
-    console.log(this.props);
     return (
       /* Signin/logout button */
-      <div className={this.props.id}>
+      <div>
         {/*
          * If user is logged in as well as verified, show the logout button
          * If user is logged in but not verified, show please wait button
@@ -143,8 +136,6 @@ class GoogleAuth extends React.Component {
 
 // Get the required props from the state
 const mapStateToProps = state => {
-  console.log(state);
-
   return {
     // If user is logged in
     loggedIn: state.loggedIn,

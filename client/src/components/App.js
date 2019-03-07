@@ -2,27 +2,33 @@ import React, { Component } from 'react';
 import { Route, Redirect, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Footer from './Footer';
+
 import Header from './Header';
 import CardLogin from './CardLogin';
 import About from './About';
 import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './SideNavigation';
+
 import toggleMenu from '../actions/toggleMenu';
 
 import '../App.css';
 
-/* A private routing component to redirect a user to login page if 
+/* A private routing component to redirect a user to login page if
 protected pages are accessed by Url or any mean */
 
-function PrivateRoute({ component: Component1, loggedIn: loggedIn1, ...rest }) {
+function PrivateRoute({
+  component: Component1,
+  loggedIn: loggedIn1,
+  user,
+  ...rest
+}) {
   return (
     <Route
       {...rest}
       render={props =>
         loggedIn1 ? (
-          <Component1 {...props} />
+          <Component1 {...props} user={user} />
         ) : (
           <Redirect
             to={{
@@ -115,13 +121,11 @@ class App extends Component {
               exact
               path="/profile"
               component={Profile}
+              user={this.props.user}
               loggedIn={this.props.loggedIn}
             />
           </Switch>
         </div>
-
-        {/* render copyright of the app and contacts details */}
-        {!this.props.loggedIn && <Footer />}
       </div>
     );
   }
