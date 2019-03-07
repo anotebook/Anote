@@ -1,17 +1,10 @@
 import React from 'react';
-import { Navbar, Nav, NavItem } from 'react-bootstrap';
+import { Navbar, Nav, NavItem, Dropdown } from 'react-bootstrap';
 import { FaUser } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import { LinkContainer } from 'react-router-bootstrap';
 
 // import PropTypes, { object } from 'prop-types';
-
-import {
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem
-} from 'reactstrap';
 import GoogleAuth from './GoogleAuth';
 
 /* this component render the header for the app and is always fixed at top */
@@ -19,7 +12,6 @@ class Header extends React.Component {
   static propTypes = {};
 
   render() {
-    console.log(this.props.currentUser);
     return (
       <Navbar
         collapseOnSelect="true"
@@ -75,28 +67,24 @@ class Header extends React.Component {
                 <Link to="/settings" className="dropdown-item" >Settings </Link>
                 </NavDropdown> */}
 
-              <UncontrolledDropdown
-                nav
-                inNavbar
+              <Dropdown
                 className={
                   this.props.currentUser.loggedIn ? 'visible' : 'hidden'
                 }
               >
-                <DropdownToggle nav caret>
-                  User
-                </DropdownToggle>
-                <DropdownMenu right>
-                  <DropdownItem tag={Link} to="/profile">
+                <Dropdown.Toggle>User</Dropdown.Toggle>
+                <Dropdown.Menu>
+                  <Dropdown.Item as={Link} to="/profile">
                     Profile
-                  </DropdownItem>
-                  <DropdownItem tag={Link} to="/settings">
+                  </Dropdown.Item>
+                  <Dropdown.Item as={Link} to="/settings">
                     Settings
-                  </DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                  </Dropdown.Item>
+                </Dropdown.Menu>
+              </Dropdown>
 
               <NavItem>
-                <GoogleAuth id="no_css" text="Sign in" />
+                <GoogleAuth text="Sign in" />
               </NavItem>
             </Nav>
           </Navbar.Collapse>

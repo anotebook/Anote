@@ -4,7 +4,11 @@
     "es6": true,
     "node": true
   },
-  "extends": ["eslint:recommended", "airbnb", "prettier"],
+  "extends": [
+    "eslint:recommended",
+    "airbnb",
+    "prettier"
+  ],
   "parser": "babel-eslint",
   "parserOptions": {
     "ecmaFeatures": {
@@ -13,7 +17,10 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
-  "plugins": ["react", "prettier"],
+  "plugins": [
+    "react",
+    "prettier"
+  ],
   "rules": {
     "indent": [
       "error",
@@ -25,14 +32,28 @@
     ],
     "no-tabs": 0,
     "react/prop-types": 0,
-    "react/jsx-indent": ["error", 2],
-    "quotes": ["error", "single"],
-    "semi": ["error", "always"],
-    "prettier/prettier": ["error"],
+    "react/jsx-indent": [
+      "error",
+      2
+    ],
+    "quotes": [
+      "error",
+      "single"
+    ],
+    "semi": [
+      "error",
+      "always"
+    ],
+    "prettier/prettier": [
+      "error"
+    ],
     "react/jsx-filename-extension": [
       1,
       {
-        "extensions": [".js", ".jsx"]
+        "extensions": [
+          ".js",
+          ".jsx"
+        ]
       }
     ],
     "max-len": [
@@ -51,12 +72,20 @@
         "mode": "minimum"
       }
     ],
-    "lines-between-class-members": ["error", "always"],
-    "max-depth": ["error", 4],
+    "lines-between-class-members": [
+      "error",
+      "always"
+    ],
+    "max-depth": [
+      "error",
+      4
+    ],
     "new-cap": [
       "error",
       {
-        "capIsNewExceptions": ["URI"]
+        "capIsNewExceptions": [
+          "URI"
+        ]
       }
     ],
     "no-multi-spaces": [
@@ -77,7 +106,10 @@
         "maxEOF": 0
       }
     ],
-    "no-mixed-spaces-and-tabs": [2, "smart-tabs"],
+    "no-mixed-spaces-and-tabs": [
+      2,
+      "smart-tabs"
+    ],
     "react/prefer-es6-class": 2,
     "react/prefer-stateless-function": 0,
     "no-use-before-define": 0,

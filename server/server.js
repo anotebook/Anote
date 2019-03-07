@@ -18,7 +18,7 @@ const mongodbUrl = process.env.REACT_APP_MONGODB_URI;
 let abiertoDb = null;
 
 // Name of our database
-const DB_NAME = 'prsnotes';
+const DB_NAME = 'anote';
 
 // Body parser middleware for json and url encoded data
 app.use(express.json());
@@ -62,7 +62,6 @@ const verifyUser = async token => {
 
 // Connect to our MongoDb database
 MongoClient.connect(mongodbUrl, { useNewUrlParser: true }, (err, db) => {
-  console.log(db);
   if (err) throw err;
   abiertoDb = db.db(DB_NAME);
 });

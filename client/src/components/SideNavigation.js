@@ -2,26 +2,30 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+
 import toggleMenu from '../actions/toggleMenu';
+
 import hamburger from '../images/hamburger.png';
 import Notes from '../images/notes.png';
 import Xlist from '../images/xlist.png';
 import Template from '../images/template.png';
-import Logout from '../images/logout.png';
 import Help from '../images/help.png';
 
 class Scrollspy extends React.Component {
   static propTypes = {
     menuDisp: PropTypes.bool.isRequired,
-    toggleMenu: PropTypes.bool.isRequired
+    toggleMenu: PropTypes.func
+  };
+
+  static defaultProps = {
+    toggleMenu: null
   };
 
   /*
     Dispatches the action to toggle the menu state
   */
   menuToggle = () => {
-    console.log(`${this.props.toggleMenu} : inside the scrollspy`);
-    this.props.toggleMenu();
+    if (this.props.toggleMenu) this.props.toggleMenu();
   };
 
   render() {
@@ -79,10 +83,7 @@ class Scrollspy extends React.Component {
                 <div className="menu-item-text">ChangeItAndIcon</div>
               ) : null}
             </Link>
-            <div
-              className="d-flex flex-column"
-              style={{ 'margin-top': 'auto' }}
-            >
+            <div className="d-flex flex-column" style={{ marginTop: 'auto' }}>
               <hr width="50px" />
 
               <Link className="menu-item" to="/help">
@@ -90,13 +91,6 @@ class Scrollspy extends React.Component {
                   <img src={Help} width="50px" alt="notes" height="50px" />
                 </div>
                 {open ? <div className="menu-item-text">Help</div> : null}
-              </Link>
-
-              <Link className="menu-item" to="/">
-                <div className="menu-item-icon">
-                  <img src={Logout} width="50px" alt="notes" height="50px" />
-                </div>
-                {open ? <div className="menu-item-text">Log Out</div> : null}
               </Link>
             </div>
           </ul>
