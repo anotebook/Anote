@@ -16,7 +16,7 @@ class Header extends React.Component {
       <Navbar
         collapseOnSelect="true"
         expand="sm"
-        className="Appheader"
+        className="Appheader bg-light"
         variant="light"
         fixed="top"
       >
@@ -58,19 +58,10 @@ class Header extends React.Component {
               >
                 <FaUser />
               </NavItem>
-
-              {/* <NavDropdown title="User" id="collasible-nav-dropdown"
-               className={this.props.currentUser.loggedIn?"visible":"hidden"} >
-                <NavDropdown.Item href="/" >pk</NavDropdown.Item>
-                <Link to="/profile" className="dropdown-item" role="button">
-                   Profile</Link>
-                <Link to="/settings" className="dropdown-item" >Settings </Link>
-                </NavDropdown> */}
-
               <Dropdown
-                className={
+                className={`${
                   this.props.currentUser.loggedIn ? 'visible' : 'hidden'
-                }
+                } my-auto mx-2`}
               >
                 <Dropdown.Toggle>User</Dropdown.Toggle>
                 <Dropdown.Menu>
