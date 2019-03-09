@@ -1,23 +1,37 @@
 import React from 'react';
-import { Jumbotron } from 'react-bootstrap';
+import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
 import { FaCog } from 'react-icons/fa';
 
 /* this component shows the settings for the loggedIn User */
 class AppSetting extends React.Component {
   render() {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center h-100 app_theme">
-        <Jumbotron style={{ margin: '125px' }}>
-          <div className="d-flex">
-            <FaCog className="d-inline-block FaUserSetting" />
-            <h1>Settings</h1>
-          </div>
-          <p>
-            Font Size:_ <br />
-            Font Color:_ <br />
-            Theme:_
-          </p>
-        </Jumbotron>
+      <div className="d-flex flex-column justify-content-center align-items-center h-100">
+        <Card style={{ margin: '125px' }}>
+          <Card.Body>
+            <Card.Title className="d-flex align-items-center m-0">
+              <FaCog className="d-inline-block" width="40" height="40" />
+              <h1 className="m-0 ml-2">Settings</h1>
+            </Card.Title>
+          </Card.Body>
+          <ListGroup className="list-group-flush">
+            <ListGroupItem>
+              Font Size
+              <br />
+              <em>12</em>
+            </ListGroupItem>
+            <ListGroupItem>
+              Font Color
+              <br />
+              <em>Black</em>
+            </ListGroupItem>
+            <ListGroupItem>
+              Theme
+              <br />
+              <em>Default</em>
+            </ListGroupItem>
+          </ListGroup>
+        </Card>
       </div>
     );
   }
