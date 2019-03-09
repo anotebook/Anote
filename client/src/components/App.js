@@ -8,7 +8,7 @@ import CardLogin from './CardLogin';
 import About from './About';
 import Profile from './Profile';
 import AppSetting from './AppSetting';
-import Scrollspy from './SideNavigation';
+import Scrollspy from './Scrollspy';
 
 import toggleMenu from '../actions/toggleMenu';
 

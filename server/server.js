@@ -8,7 +8,7 @@ import hash from 'object-hash';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 7000;
 
 // Get OAuth client for server verification of the user
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_SIGNIN_CLIENT_ID);

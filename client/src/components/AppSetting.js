@@ -6,8 +6,11 @@ import { FaCog } from 'react-icons/fa';
 class AppSetting extends React.Component {
   render() {
     return (
-      <div className="d-flex flex-column justify-content-center align-items-center h-100">
-        <Card style={{ margin: '125px' }}>
+      <div
+        className="d-flex flex-column
+          justify-content-center align-items-center h-100 w-75"
+      >
+        <Card style={{ width: '50%' }}>
           <Card.Body>
             <Card.Title className="d-flex align-items-center m-0">
               <FaCog className="d-inline-block" width="40" height="40" />
