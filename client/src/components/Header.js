@@ -9,8 +9,6 @@ import GoogleAuth from './GoogleAuth';
 
 /* this component render the header for the app and is always fixed at top */
 class Header extends React.Component {
-  static propTypes = {};
-
   render() {
     return (
       <Navbar
@@ -25,7 +23,7 @@ class Header extends React.Component {
             this.props.currentUser.loggedIn ? 'headerContainerlogged' : ''
           }`}
         >
-          <LinkContainer to="./about">
+          <LinkContainer to="./">
             <Navbar.Brand>
               <div className="AppBrand">
                 <img
@@ -45,7 +43,10 @@ class Header extends React.Component {
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
               <LinkContainer activeStyle={{ color: 'red' }} to="./">
-                <Nav.Link> Home </Nav.Link>
+                <Nav.Link className="ml-auto"> Home </Nav.Link>
+              </LinkContainer>
+              <LinkContainer activeStyle={{ color: 'red' }} to="./about">
+                <Nav.Link className="ml-auto"> About </Nav.Link>
               </LinkContainer>
             </Nav>
 
@@ -53,7 +54,9 @@ class Header extends React.Component {
               <NavItem
                 id="FaUserIcon"
                 className={
-                  this.props.currentUser.loggedIn ? 'visible' : 'hidden'
+                  `ml-auto ${this.props.currentUser.loggedIn}`
+                    ? 'visible'
+                    : 'hidden'
                 }
               >
                 <FaUser />
@@ -61,10 +64,10 @@ class Header extends React.Component {
               <Dropdown
                 className={`${
                   this.props.currentUser.loggedIn ? 'visible' : 'hidden'
-                } my-auto mx-2`}
+                } my-auto ml-auto ml-sm-2 d-flex flex-column align-items-end`}
               >
                 <Dropdown.Toggle>User</Dropdown.Toggle>
-                <Dropdown.Menu>
+                <Dropdown.Menu className="text-right text-sm-left">
                   <Dropdown.Item as={Link} to="/profile">
                     Profile
                   </Dropdown.Item>
@@ -74,7 +77,7 @@ class Header extends React.Component {
                 </Dropdown.Menu>
               </Dropdown>
 
-              <NavItem>
+              <NavItem className="ml-auto ml-sm-2 mt-2 mt-sm-0">
                 <GoogleAuth text="Sign in" />
               </NavItem>
             </Nav>

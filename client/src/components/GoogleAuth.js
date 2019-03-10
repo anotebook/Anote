@@ -81,7 +81,7 @@ class GoogleAuth extends React.Component {
   render() {
     return (
       /* Signin/logout button */
-      <div>
+      <>
         {/*
          * If user is logged in as well as verified, show the logout button
          * If user is logged in but not verified, show please wait button
@@ -96,11 +96,7 @@ class GoogleAuth extends React.Component {
               onLogoutSuccess={this.onLogoutSuccess}
               // Custom logout buton design
               render={renderProps => (
-                <Button
-                  variant="danger"
-                  onClick={renderProps.onClick}
-                  className="m-1"
-                >
+                <Button variant="danger" onClick={renderProps.onClick}>
                   Log Out
                 </Button>
               )}
@@ -119,17 +115,13 @@ class GoogleAuth extends React.Component {
             isSignedIn={true}
             // Custom sign in buton design
             render={renderProps => (
-              <Button
-                variant="primary"
-                onClick={renderProps.onClick}
-                className="m-1"
-              >
+              <Button variant="primary" onClick={renderProps.onClick}>
                 {this.props.text}
               </Button>
             )}
           />
         )}
-      </div>
+      </>
     );
   }
 }
