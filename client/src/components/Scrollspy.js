@@ -46,7 +46,6 @@ class Scrollspy extends React.Component {
             background: 'none'
           }}
           onClick={this.menuToggle}
-          onKeyDown={this.menuToggle}
         >
           <MdMenu
             style={{

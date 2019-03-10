@@ -143,7 +143,7 @@ const mapStateToProps = state => {
 
     user: state.user,
 
-    menu_disp: state.toggle_menu
+    menuDisp: state.toggleMenu
   };
 };
 
