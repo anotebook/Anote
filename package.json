@@ -9,7 +9,7 @@
     "prettier-watch": "onchange 'client/src/**/*.{js,css,json}' 'server/*.{js,json}' -- prettier --write {{changed}}",
     "client": "cd client && npm start",
     "server": "cd server && npm start ",
-    "install": "concurrently --kil-others-on-fail \"npm install\" \"npm run install-client\" \"npm run install-server\"",
+    "install": "concurrently --kill-others-on-fail \"npm install\" \"npm run install-client\" \"npm run install-server\"",
     "dev": "concurrently --kill-others-on-fail \"npm run prettier-watch\" \"npm run server\" \"npm run client\""
   },
   "author": "anotebook",
