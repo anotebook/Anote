@@ -48,8 +48,6 @@
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  align-items: center;
   padding: 0;
   margin: 0;
 }
@@ -76,38 +74,8 @@
   margin-bottom: 10px;
 }
 
-.sideNav-nested {
-  display: flex;
-  flex-direction: column;
-}
-
-/*
-  To make the content appears just below the buttons,
-  We first align the buttons to the center of the screen
-  and then we make the nested-item to take the half
-  width of the parent and start this half width from the
-  back side (so, "align-self: flex-end")
-*/
-
-.nested-item {
-  width: 50%;
-  align-self: flex-end;
-  margin-bottom: 10px;
-  margin-right: 10px;
-}
-
 .img-hamburger:hover {
   cursor: pointer;
-}
-
-@media (min-width: 800px) {
-  .img-hamburger {
-    box-shadow: none;
-  }
-
-  .sideNav {
-    left: 0;
-  }
 }
 
 /*
@@ -123,10 +91,6 @@
 
 .sideNav--hide {
   width: 70px;
-}
-
-.img-hamburger--hide-shadow {
-  box-shadow: none;
 }
 
 /* For the sideNavigation menu and it's item */
