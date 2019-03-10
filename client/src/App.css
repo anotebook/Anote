@@ -24,8 +24,7 @@
 
 /* hidden class */
 .hidden {
-  display: none;
-  visibility: hidden;
+  display: none !important;
 }
 
 /* App Header style */
