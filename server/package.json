@@ -4,13 +4,14 @@
   "description": "Keep yourself organised",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "nodemon server.js --exec babel-node --presets babel-preset-env"
+    "start": "nodemon server.js --exec babel-node"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-core": "^6.26.3",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.4",
+    "@babel/node": "^7.2.2",
+    "@babel/preset-env": "^7.3.4",
     "babel-eslint": "^10.0.1",
-    "babel-preset-env": "^1.7.0",
     "nodemon": "^1.18.9"
   },
   "dependencies": {

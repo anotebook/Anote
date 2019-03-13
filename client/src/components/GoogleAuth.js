@@ -2,9 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { GoogleLogin, GoogleLogout } from 'react-google-login';
 import { Button } from 'react-bootstrap';
-import axios from 'axios';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import axios, { setAuthToken, getAuthToken } from '../utils/axios';
+
 import About from './About';
 
 import {
@@ -42,17 +43,18 @@ class GoogleAuth extends React.Component {
 
     // After successful login, verify the user by the server
     // by sending the user's id token recieved by Google
-
-    axios
-      .post('/api/v1/createUser', {
-        id_token: googleRes.getAuthResponse().id_token
+    setAuthToken(googleRes.getAuthResponse().id_token);
+    axios()
+      .post('/createUser', {
+        id_token: getAuthToken()
       })
       .then(res => {
         // Verification successful! Update state and user data
         this.props.changeVerifyState(true);
         this.props.changeUserData(res.data);
 
-        this.props.history.push('/profile');
+        if (this.props.location.state)
+          this.props.history.push(this.props.location.state.from.pathname);
       })
       .catch(() => {
         // Verification error!(Either mongodb or token verification)

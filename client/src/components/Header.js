@@ -42,10 +42,10 @@ class Header extends React.Component {
 
           <Navbar.Collapse id="responsive-navbar-nav">
             <Nav className="mr-auto">
-              <LinkContainer activeStyle={{ color: 'red' }} to="./">
+              <LinkContainer to="/">
                 <Nav.Link className="ml-auto"> Home </Nav.Link>
               </LinkContainer>
-              <LinkContainer activeStyle={{ color: 'red' }} to="./about">
+              <LinkContainer to="/about">
                 <Nav.Link className="ml-auto"> About </Nav.Link>
               </LinkContainer>
             </Nav>

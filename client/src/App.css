@@ -1,3 +1,13 @@
+/* Extension to bootstrap styles
+ * Don't write any other specific styles in this section
+ */
+
+@media screen and (min-width: 576px) {
+  .w-sm-75 {
+    width: 75% !important;
+  }
+}
+
 /* responsive styling for different width */
 
 @media screen and (max-width: 575px) {
@@ -139,4 +149,67 @@
   width: 100%;
   height: 100%;
   padding-left: 250px;
+}
+
+/* Notes */
+
+/* Remove unnecessary style from list */
+ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+li {
+  padding: 8px;
+}
+
+li:hover {
+  cursor: pointer;
+  background: ghostwhite;
+}
+
+/* Popover for addition of notes/group/folder */
+.popover-body {
+  padding: 0;
+}
+
+#popover-add {
+  width: 100px;
+  text-align: center;
+}
+
+/* Add button for notes/grp/folder */
+#btn-add-note {
+  width: 50px;
+  height: 50px;
+  border-radius: 25px;
+  font-size: 1.5em;
+  text-align: center;
+  vertical-align: middle;
+  padding: 0;
+  border: none;
+  position: fixed;
+  right: 12px;
+  bottom: 12px;
+  box-shadow: 6px 6px 15px 0 gray;
+  transition: all 0.5s;
+}
+
+#btn-add-note:hover {
+  box-shadow: 4px 4px 12px 0 grey;
+}
+
+.btn-add-note {
+  transition: all 0.2s;
+}
+
+.btn-add-note--opened {
+  transform: rotateZ(45deg);
+}
+
+.tab-content {
+  flex: 1 0 auto;
+  margin: 1.2em;
+  margin-bottom: 70px;
 }
