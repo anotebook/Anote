@@ -9,6 +9,8 @@ import About from './About';
 import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './Scrollspy';
+import NoteContainer from './NoteContainer';
+import Create from './Create';
 
 import toggleMenu from '../actions/toggleMenu';
 
@@ -16,7 +18,6 @@ import '../App.css';
 
 /* A private routing component to redirect a user to login page if
 protected pages are accessed by Url or any mean */
-
 function PrivateRoute({
   component: Component1,
   loggedIn: loggedIn1,
@@ -98,15 +99,37 @@ class App extends Component {
 
         {/* render main-content i.e. Login Data/ Setting/ Profile Data */}
 
+        {/* Show side nav is user is logged in */}
         {this.props.loggedIn && <Scrollspy />}
 
+        {/* Main content */}
         <div className="main-content">
           <Switch>
+            {/* Put all the Routes here
+             and all the PrivateRoutes at the bottom */}
+
             {/* render Login Message for User */}
             <Route exact path="/" component={CardLogin} />
 
             {/* render features of the App and how to use info */}
             <Route exact path="/about" component={About} />
+
+            {/* Start PrivateRoutes from here */}
+
+            {/* Show notes visible to the user */}
+            <PrivateRoute
+              exact
+              path="/notes"
+              component={NoteContainer}
+              loggedIn={this.props.loggedIn}
+            />
+
+            {/* Component to create note/grp/folder */}
+            <PrivateRoute
+              path="/create"
+              component={Create}
+              loggedIn={this.props.loggedIn}
+            />
 
             {/* render AppSettings and is valid for loggedIn User */}
             <PrivateRoute

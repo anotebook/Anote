@@ -8,17 +8,20 @@ import hash from 'object-hash';
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 7000;
+const port = process.env.PORT || 8000;
 
 // Get OAuth client for server verification of the user
 const client = new OAuth2Client(process.env.REACT_APP_GOOGLE_SIGNIN_CLIENT_ID);
 
 const MongoClient = mongodb.MongoClient;
 const mongodbUrl = process.env.REACT_APP_MONGODB_URI;
-let abiertoDb = null;
+let anoteDb = null;
 
 // Name of our database
 const DB_NAME = 'anote';
+
+// Base url for our api
+const baseUrl = '/api/v1';
 
 // Body parser middleware for json and url encoded data
 app.use(express.json());
@@ -63,20 +66,24 @@ const verifyUser = async token => {
 // Connect to our MongoDb database
 MongoClient.connect(mongodbUrl, { useNewUrlParser: true }, (err, db) => {
   if (err) throw err;
-  abiertoDb = db.db(DB_NAME);
+  anoteDb = db.db(DB_NAME);
 });
 
 app.get('/', (req, res) => {
-  res.send(`Hello World${abiertoDb}`);
+  res.send(`Hello World${anoteDb}`);
 });
+
+/*
+ * API requests for user
+ */
 
 /*
  * Handle API reuqest to check if a user exists.
  *
  * Query the db for the user. If found, return the user data
  */
-app.get('/api/v1/checkUser', (req, res) => {
-  abiertoDb.collection('user-list').findOne(req.query, (err, result) => {
+app.get(`${baseUrl}/checkUser`, (req, res) => {
+  anoteDb.collection('user-list').findOne(req.query, (err, result) => {
     if (err) {
       res.status(500).json({ reason: 'Internal error' });
       return;
@@ -93,14 +100,14 @@ app.get('/api/v1/checkUser', (req, res) => {
  * Then, check if user already exists. If exists, return user data.
  * If user doesn't exists, create one and return user's data.
  */
-app.post('/api/v1/createUser', (req, res) => {
+app.post(`${baseUrl}/createUser`, (req, res) => {
   // Verify integrity of id token and client id
   verifyUser(req.body.id_token)
     .then(user => {
       // Verification successful!
 
       // Find id user exists in databse
-      abiertoDb.collection('user-list').findOne(user, (err, result) => {
+      anoteDb.collection('user-list').findOne(user, (err, result) => {
         if (err) {
           res.status(500).json({ reason: 'Internal error' });
           return;
@@ -110,8 +117,7 @@ app.post('/api/v1/createUser', (req, res) => {
         if (result === null) {
           // User doesn't exist, create one and return the data
           user.username = `${user.name.replace(/ /g, '_')}_${hash(user)}`;
-          user.about = 'I am too lazy to change the default text!';
-          abiertoDb.collection('user-list').insertOne(user, err0 => {
+          anoteDb.collection('user-list').insertOne(user, err0 => {
             if (err0) {
               res.status(500).json({ reason: 'Internal error' });
               return;
@@ -131,4 +137,50 @@ app.post('/api/v1/createUser', (req, res) => {
     });
 });
 
-app.listen(port, () => console.log(`Listening on port ${port}`));
+/*
+ * API requests for notes
+ */
+
+/*
+ * It creates a note when requested.
+ * First it authenticates the user, then checks if it exists
+ * and then inserts the note.
+ */
+app.post(`${baseUrl}/create-note`, (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // Create note and insert to the database
+      const { title, visibility, timestamp } = req.body;
+      const note = { title, visibility, timestamp };
+      note.owner = user.uid;
+      note.id = hash(note);
+      // Check if user exists
+      anoteDb.collection('user-list').findOne(user, (err, result) => {
+        if (err) {
+          res.status(500).json({ reason: 'Internal error' });
+          return;
+        }
+        if (result === null) {
+          res.status(400).json({ reason: 'User does not exist' });
+          return;
+        }
+        // If user exists, create the note
+        anoteDb.collection('notes').insertOne(note, err0 => {
+          if (err0) {
+            res.status(500).json({ reason: 'Internal error' });
+            return;
+          }
+          res.status(200).json(note);
+        });
+      });
+    })
+    .catch(err => {
+      // Verification failed
+      res.status(400).json({ reason: `Authentication failed!\n${err}` });
+    });
+});
+
+app.listen(port, () => `Listening on port ${port}`);
