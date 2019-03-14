@@ -39,7 +39,7 @@ class CreateNote extends Component {
   handleCreateNote = () => {
     const title = this.state.title;
     const visibility = this.state.visibility;
-    axios().post('/create-note', {
+    axios().post('/notes/create', {
       title,
       visibility,
       folder: this.props.location.pathname,
