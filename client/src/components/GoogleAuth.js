@@ -45,7 +45,7 @@ class GoogleAuth extends React.Component {
     // by sending the user's id token recieved by Google
     setAuthToken(googleRes.getAuthResponse().id_token);
     axios()
-      .post('/createUser', {
+      .post('/users/create', {
         id_token: getAuthToken()
       })
       .then(res => {
