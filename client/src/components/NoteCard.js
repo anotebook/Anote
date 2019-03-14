@@ -8,7 +8,7 @@ class NoteCard extends Component {
     text: PropTypes.string,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
-    updated: PropTypes.string
+    updated: PropTypes.number
   };
 
   static defaultProps = {

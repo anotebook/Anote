@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router-dom';
+import { Route, withRouter } from 'react-router-dom';
 
 import CreateNote from './CreateNote';
 
@@ -11,4 +11,4 @@ class Create extends Component {
   }
 }
 
-export default Create;
+export default withRouter(Create);

@@ -21,7 +21,7 @@ protected pages are accessed by Url or any mean */
 function PrivateRoute({
   component: Component1,
   loggedIn: loggedIn1,
-  user,
+  componentProps,
   ...rest
 }) {
   return (
@@ -29,7 +29,7 @@ function PrivateRoute({
       {...rest}
       render={props =>
         loggedIn1 ? (
-          <Component1 {...props} user={user} />
+          <Component1 {...props} {...componentProps} />
         ) : (
           <Redirect
             to={{
@@ -144,7 +144,7 @@ class App extends Component {
               exact
               path="/profile"
               component={Profile}
-              user={this.props.user}
+              componentProps={{ user: this.props.user }}
               loggedIn={this.props.loggedIn}
             />
           </Switch>
