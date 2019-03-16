@@ -23,8 +23,8 @@ const userSchema = new mongoose.Schema({
   about: {
     type: String
   },
-  notes: {
-    type: []
+  root: {
+    type: Object
   }
 });
 

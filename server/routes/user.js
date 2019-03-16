@@ -3,6 +3,7 @@ import express from 'express';
 
 import verifyUser from '../VerifyUser';
 import User from '../models/users';
+import Folder from '../models/folders';
 
 // eslint-disable-next-line new-cap
 const app = express.Router();
@@ -33,17 +34,26 @@ app.post('/create', (req, res) => {
 
       // Find id user exists in databse
       User.findOne({ uid: user.uid })
-        .then(result => {
+        .then(async result => {
           // If user doesn't exist, create one. Else, return data
           if (result === null) {
             // User doesn't exist, create one and return the data
             user.username = `${user.name.replace(/ /g, '_')}_${hash(user)}`;
+            const folder = {
+              name: 'root',
+              owner: user.uid,
+              timestamp: Date.now(),
+              folders: [],
+              groups: [],
+              notes: []
+            };
+            folder.id = hash(folder);
+            const rootFolder = new Folder(folder);
+            await rootFolder.save();
+            user.root = folder.id;
 
             const newUser = new User(user);
-            newUser
-              .save()
-              .then(user0 => res.status(200).json(user0))
-              .catch(err => res.status(500).json({ reason: err }));
+            newUser.save().then(user0 => res.status(200).json(user0));
           } else {
             // User already exists, just return the data
             res.status(200).json(result);

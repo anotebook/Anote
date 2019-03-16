@@ -22,6 +22,10 @@ const noteSchema = new mongoose.Schema({
   },
   content: {
     type: String
+  },
+  folder: {
+    type: String,
+    required: true
   }
 });
 

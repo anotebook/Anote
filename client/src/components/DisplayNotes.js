@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import { withRouter } from 'react-router-dom';
 import { CardColumns } from 'react-bootstrap';
 
 import NoteCard from './NoteCard';
@@ -20,8 +21,12 @@ class DisplayNotes extends Component {
 
   // As the component mounts, fetch all the notes/grp/folder
   componentDidMount = () => {
+    const path = this.props.history.location.pathname;
+    let folder = 'root';
+    if (path.startsWith('/folders/show/'))
+      folder = path.substr(path.lastIndexOf('/') + 1);
     axios()
-      .get(`/${this.props.type}s/get`)
+      .get(`/${this.props.type}s/get/${folder}`)
       // Update the state to show the fetched data
       .then(res => this.setState({ contentArray: res.data }));
   };
@@ -46,4 +51,4 @@ class DisplayNotes extends Component {
   }
 }
 
-export default DisplayNotes;
+export default withRouter(DisplayNotes);
