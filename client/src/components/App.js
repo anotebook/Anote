@@ -122,12 +122,6 @@ class App extends Component {
               loggedIn={this.props.loggedIn}
             />
 
-            <PrivateRoute
-              path="/create"
-              component={NoteContainer}
-              loggedIn={this.props.loggedIn}
-            />
-
             {/* render AppSettings and is valid for loggedIn User */}
             <PrivateRoute
               exact

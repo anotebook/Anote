@@ -4,6 +4,7 @@ import express from 'express';
 import verifyUser from '../VerifyUser';
 import Note from '../models/notes';
 import User from '../models/users';
+import Folder from '../models/folders';
 
 // eslint-disable-next-line new-cap
 const app = express.Router();
@@ -19,69 +20,71 @@ app.post('/create', (req, res) => {
   // Verify the user and then continue further steps
   verifyUser(idToken)
     .then(user => {
+      // Check if user exists
+      return User.findOne({ uid: user.uid });
+    })
+    .then(async user => {
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
+
+      /* If user exists, create the note */
+
       // Create note and insert to the database
       const { title, visibility, timestamp } = req.body;
-      const note = { title, visibility, timestamp };
+      // If folder is root, get the root folder's id
+      let { folder } = req.body;
+      if (folder === 'root') folder = user.root;
+      // Create the note using the data extracted
+      const note = { title, visibility, folder, timestamp };
       note.owner = user.uid;
       note.id = hash(note);
-      // Check if user exists
-      User.findOne({ uid: user.uid })
-        .then(result => {
-          if (result === null) {
-            res.status(400).json({ reason: 'User does not exist' });
-            return;
-          }
-          // If user exists, create the note
-          const newNote = new Note(note);
-          newNote
-            .save()
-            .then(note0 => res.status(200).json(note0))
-            .catch(() => res.status(500).json({ reason: 'Internal error' }));
-        })
-        .catch(() => res.status(500).json({ reason: 'Internal error' }));
+      // Update the folder with the new note's id
+      await Folder.findOneAndUpdate(
+        { id: folder },
+        { $push: { notes: note.id } }
+      );
+      // Note created
+      const newNote = new Note(note);
+      // Save to db and return the result
+      return newNote.save();
     })
+    .then(note => res.status(200).json(note))
     .catch(err => {
+      const code = err.code || 500;
       // Verification failed
-      res.status(400).json({ reason: `Authentication failed!\n${err}` });
+      res.status(code).json({ reason: err.reason || 'Internal server error' });
     });
 });
 
 /*
  * Returns the notes owned by the requesting user
  */
-app.get('/get', (req, res) => {
+app.get('/get/:id', (req, res) => {
   // Get the auth token of the user which sent the request
   const idToken = req.header('Authorization');
   // Verify the user and then continue further steps
   verifyUser(idToken)
     .then(user => {
       // Check if user exists
-      User.findOne(user, (err, result) => {
-        if (err) {
-          res.status(500).json({ reason: 'Internal error' });
-          return;
-        }
-        if (result === null) {
-          res.status(400).json({ reason: 'User does not exist' });
-          return;
-        }
+      return User.findOne(user);
+    })
+    .then(user => {
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
 
-        // If user exists, return all the notes owned
-        const uid = user.uid;
-        Note.find({ owner: uid }, (err0, notes) => {
-          if (err0) {
-            res.status(500).json({ reason: 'Internal error' });
-            return;
-          }
-
-          // Successfully send the notes
-          res.status(200).json(notes);
-        });
-      });
+      let folder = req.params.id;
+      if (folder === 'root') folder = user.root;
+      // If user exists, return all the notes owned
+      return Note.find({ owner: user.uid, folder });
+    })
+    .then(notes => {
+      // Successfully send the notes
+      res.status(200).json(notes);
     })
     .catch(err => {
+      const code = err.code || 500;
       // Verification failed
-      res.status(400).json({ reason: `Authentication failed!\n${err}` });
+      res.status(code).json({ reason: err.reason || 'Internal server error' });
     });
 });
 
