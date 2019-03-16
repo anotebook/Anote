@@ -8,6 +8,17 @@ import DisplayNotes from './DisplayNotes';
  * This is the container for notes/templates shown
  */
 class NoteContainer extends Component {
+  state = {
+    // State for note container
+    // Possible options -
+    // [
+    //  show(view all notes),
+    //  create(create new note),
+    //  open(edit note)
+    // ]
+    noteState: 'show'
+  };
+
   // Popover to show what to create - note/grp/folder
   popover = props => (
     <Popover

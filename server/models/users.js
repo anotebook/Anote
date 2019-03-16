@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const userSchema = new mongoose.Schema({
   uid: {
@@ -13,29 +13,19 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  pictue: {
-    type: String,
+  picture: {
+    type: String
   },
   username: {
     type: String,
     required: true
   },
   about: {
-    type: String,
+    type: String
   },
   notes: {
     type: []
   }
 });
 
-module.exports = mongoose.model('users', userSchema);
-
-/*
-  uid: String, req,
-  email: String, req,
-  name: String, req,
-  picture: String, opt,
-  username: String, req,
-  about: String, opt,
-  notes: [], opt
-*/
+export default mongoose.model('users', userSchema);

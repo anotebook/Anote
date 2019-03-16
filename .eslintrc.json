@@ -80,14 +80,6 @@
       "error",
       4
     ],
-    "new-cap": [
-      "error",
-      {
-        "capIsNewExceptions": [
-          "URI"
-        ]
-      }
-    ],
     "no-multi-spaces": [
       "error",
       {
@@ -109,6 +101,14 @@
     "no-mixed-spaces-and-tabs": [
       2,
       "smart-tabs"
+    ],
+    "new-cap": [
+      "error",
+      {
+        "capIsNewExceptions": [
+          "URI"
+        ]
+      }
     ],
     "react/prefer-es6-class": 2,
     "react/prefer-stateless-function": 0,

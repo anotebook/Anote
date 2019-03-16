@@ -10,7 +10,6 @@ import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
-import Create from './Create';
 
 import toggleMenu from '../actions/toggleMenu';
 
@@ -116,18 +115,16 @@ class App extends Component {
 
             {/* Start PrivateRoutes from here */}
 
-            {/* Show notes visible to the user */}
+            {/* Show notes w/ associated functions to the user */}
             <PrivateRoute
-              exact
               path="/notes"
               component={NoteContainer}
               loggedIn={this.props.loggedIn}
             />
 
-            {/* Component to create note/grp/folder */}
             <PrivateRoute
               path="/create"
-              component={Create}
+              component={NoteContainer}
               loggedIn={this.props.loggedIn}
             />
 

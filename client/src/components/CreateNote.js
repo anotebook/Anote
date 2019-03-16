@@ -42,7 +42,6 @@ class CreateNote extends Component {
     axios().post('/notes/create', {
       title,
       visibility,
-      folder: this.props.location.pathname,
       timestamp: Date.now()
     });
   };

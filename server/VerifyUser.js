@@ -39,4 +39,4 @@ const verifyUser = async token => {
   };
 };
 
-module.exports = verifyUser;
+export default verifyUser;

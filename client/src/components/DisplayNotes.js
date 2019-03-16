@@ -21,7 +21,7 @@ class DisplayNotes extends Component {
   // As the component mounts, fetch all the notes/grp/folder
   componentDidMount = () => {
     axios()
-      .get(`/${this.props.type}s`)
+      .get(`/${this.props.type}s/get`)
       // Update the state to show the fetched data
       .then(res => this.setState({ contentArray: res.data }));
   };

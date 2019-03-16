@@ -10,7 +10,10 @@
     "client": "cd client && npm start",
     "server": "cd server && npm start ",
     "install": "concurrently --kill-others-on-fail \"npm run install-client\" \"npm run install-server\"",
-    "dev": "concurrently --kill-others-on-fail \"npm run prettier-watch\" \"npm run server\" \"npm run client\""
+    "dev": "concurrently --kill-others-on-fail \"npm run prettier-watch\" \"npm run server\" \"npm run client\"",
+    "clean-client": "cd client && npm run clean",
+    "clean-server": "cd server && npm run clean",
+    "clean": "rm -rf node_modules && rm package-lock.json && npm run clean-client && npm run clean-server"
   },
   "author": "anotebook",
   "license": "ISC",
