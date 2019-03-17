@@ -31,15 +31,35 @@ class DisplayNotes extends Component {
       .then(res => this.setState({ contentArray: res.data }));
   };
 
+  getCardIfClicked = node => {
+    while (node) {
+      if (node.classList.contains('card')) return node;
+      node = node.parentElement;
+    }
+    return null;
+  };
+
+  handleCardColumnClick = node => {
+    const card = this.getCardIfClicked(node);
+    if (card) {
+      const note = this.state.contentArray[parseInt(card.id, 10)];
+      this.props.history.push(`/notes/open/${note.id}`, { note });
+    }
+  };
+
   render() {
     return (
-      <CardColumns className="h-100">
+      <CardColumns
+        className="h-100"
+        onClick={e => this.handleCardColumnClick(e.target)}
+      >
         {/*
          * Show the fetched notes
          */}
-        {this.state.contentArray.map(item => (
+        {this.state.contentArray.map((item, index) => (
           <NoteCard
             key={item.id}
+            id={index.toString()}
             type={this.props.type}
             title={item.title}
             text={item.content}
