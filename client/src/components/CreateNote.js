@@ -47,12 +47,17 @@ class CreateNote extends Component {
     if (from && from.startsWith('/folders/show/')) {
       folder = from.substr(from.lastIndexOf('/') + 1);
     }
-    axios().post('/notes/create', {
-      title,
-      visibility,
-      folder,
-      timestamp: Date.now()
-    });
+    axios()
+      .post('/notes/create', {
+        title,
+        visibility,
+        folder,
+        timestamp: Date.now()
+      })
+      .then(res => {
+        const note = res.data;
+        this.props.history.push(`/notes/open/${note.id}`, { note });
+      });
   };
 
   render() {
