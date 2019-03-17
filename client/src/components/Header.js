@@ -23,7 +23,7 @@ class Header extends React.Component {
             this.props.currentUser.loggedIn ? 'headerContainerlogged' : ''
           }`}
         >
-          <LinkContainer to="./">
+          <LinkContainer to="/">
             <Navbar.Brand>
               <div className="AppBrand">
                 <img

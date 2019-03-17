@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 // Custom card to display a note/template
 class NoteCard extends Component {
   static propTypes = {
+    id: PropTypes.string.isRequired,
     text: PropTypes.string,
     title: PropTypes.string.isRequired,
     type: PropTypes.string.isRequired,
@@ -18,7 +19,7 @@ class NoteCard extends Component {
 
   render() {
     return (
-      <Card>
+      <Card id={this.props.id} style={{ cursor: 'pointer' }}>
         <Card.Body>
           <Card.Title>{this.props.title}</Card.Title>
           <Card.Text>{this.props.text}</Card.Text>
