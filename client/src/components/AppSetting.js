@@ -10,7 +10,7 @@ class AppSetting extends React.Component {
         className="d-flex flex-column
           justify-content-center align-items-center h-100 w-75"
       >
-        <Card style={{ width: '50%' }}>
+        <Card id="setting-card" style={{ width: '50%' }}>
           <Card.Body>
             <Card.Title className="d-flex align-items-center m-0">
               <FaCog className="d-inline-block" width="40" height="40" />
