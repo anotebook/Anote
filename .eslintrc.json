@@ -38,7 +38,10 @@
     ],
     "quotes": [
       "error",
-      "single"
+      "single",
+      {
+        "avoidEscape": true
+      }
     ],
     "semi": [
       "error",
@@ -128,6 +131,7 @@
     "import/no-unresolved": 0,
     "react/boolean-prop-naming": 0,
     "react/jsx-boolean-value": 0,
-    "jsx-a11y/no-noninteractive-element-interactions": 0
+    "jsx-a11y/no-noninteractive-element-interactions": 0,
+    "no-underscore-dangle": 0
   }
 }

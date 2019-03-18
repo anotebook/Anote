@@ -16,7 +16,7 @@ class NoteContainer extends Component {
     //  create(create new note),
     //  open(edit note)
     // ]
-    noteState: 'show'
+    // noteState: 'show'
   };
 
   // Popover to show what to create - note/grp/folder

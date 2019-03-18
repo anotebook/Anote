@@ -65,7 +65,7 @@ class Scrollspy extends React.Component {
           so that the items don't get hide beneath header */}
           <ul
             className="menu d-flex flex-column h-100"
-            style={{ marginTop: '60px' }}
+            style={{ paddingTop: '60px' }}
           >
             <li>
               <Link className="menu-item d-flex align-items-center" to="/notes">
