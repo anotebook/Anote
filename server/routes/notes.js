@@ -17,6 +17,7 @@ const app = express.Router();
 app.post('/create', (req, res) => {
   // Get the auth token of the user which sent the request
   const idToken = req.header('Authorization');
+
   // Verify the user and then continue further steps
   verifyUser(idToken)
     .then(user => {

@@ -29,6 +29,8 @@ class ViewNote extends Component {
         convertToRaw(mediumDraftImporter(note.content || ''))
       )
     });
+    // Set the focus
+    this.refsEditor.current.focus();
   };
 
   /*
