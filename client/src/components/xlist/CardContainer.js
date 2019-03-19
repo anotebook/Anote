@@ -17,7 +17,6 @@ class XlistCardContainer extends React.Component {
 
     clickedCardName: null,
     clickedCardType: null,
-    clickedCardOwner: null,
 
     addXlistClicked: false,
     addXlistError: null
@@ -79,7 +78,7 @@ class XlistCardContainer extends React.Component {
       .catch(err => {
         if (this.isUnmount) return;
         if (err.response) {
-          alert(err.response.data);
+          // TODO: Show error message
         }
       });
   };
@@ -97,8 +96,7 @@ class XlistCardContainer extends React.Component {
     if (card) {
       const cardNameAndEmail = card.id.split('$$');
       this.setState({
-        clickedCardName: cardNameAndEmail[0],
-        clickedCardOwner: cardNameAndEmail[1]
+        clickedCardName: cardNameAndEmail[0]
       });
     }
   };
@@ -134,7 +132,6 @@ class XlistCardContainer extends React.Component {
   };
 
   render() {
-    console.log(this.state.clickedCardName, this.state.clickedCardOwner);
     if (this.state.clickedCardName) {
       return (
         <Redirect
