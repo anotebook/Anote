@@ -6,7 +6,7 @@ import { FaHeart } from 'react-icons/fa';
 class About extends React.Component {
   render() {
     return (
-      <Card style={{ width: '40%' }}>
+      <Card id="about-card" style={{ width: '30%' }}>
         <Card.Body>
           <Card.Title>Anote</Card.Title>
           <Card.Text>

@@ -32,7 +32,7 @@ class Profile extends React.Component {
 
     return (
       <div className="d-flex flex-column justify-content-center align-items-center h-100">
-        <Card style={{ width: '75%' }}>
+        <Card id="profile-card" style={{ width: '60%' }}>
           <Card.Body>
             <Card.Title className="d-flex align-items-center">
               <img src={picture} alt="Profile" />

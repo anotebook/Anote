@@ -68,7 +68,10 @@ class Scrollspy extends React.Component {
             style={{ paddingTop: '60px' }}
           >
             <li>
-              <Link className="menu-item d-flex align-items-center" to="/notes">
+              <Link
+                className="menu-item d-flex align-items-center"
+                to="/notes/show"
+              >
                 <FaRegStickyNote width="50px" height="50px" />
                 {open ? <div className="menu-item-text">Notes</div> : null}
               </Link>

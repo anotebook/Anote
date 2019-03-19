@@ -20,7 +20,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // connect to the database
-mongoose.connect(process.env.REACT_APP_MONGODB_URI, { useNewUrlParser: true });
+mongoose.connect(process.env.REACT_APP_MONGODB_URI, {
+  useNewUrlParser: true,
+  useFindAndModify: false
+});
 
 // TODO: Serve static content from react production build
 app.get('/', (req, res) => {

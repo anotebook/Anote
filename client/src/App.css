@@ -39,6 +39,7 @@
 
 /* App Header style */
 .Appheader {
+  background-color: #f0f0f0 !important;
   font-size: 1.1rem;
   color: teal;
 }
@@ -57,8 +58,58 @@
   flex: 1 0 auto;
   display: flex;
   flex-direction: column;
+  position: relative;
   padding: 0;
   margin: 0;
+}
+
+/* login page */
+#login-card,
+#about-card {
+  font-style: italic;
+  padding: 1rem;
+  position: absolute;
+  top: 20%;
+  left: 34%;
+  right: 0;
+  overflow: hidden;
+  /* margin: 0 auto; */
+  /* margin-top: 155px;
+  margin-bottom: 150px; */
+  background-color: #f0f0f0;
+  border: 5px rgb(175, 175, 175);
+}
+
+/* profie page */
+#profile-card {
+  font-style: italic;
+  padding: 1rem;
+  position: absolute;
+  top: 20%;
+  left: 18%;
+  right: 0;
+  overflow: hidden;
+  /* margin: 0 auto; */
+  /* margin-top: 155px;
+  margin-bottom: 150px; */
+  background-color: #f0f0f0;
+  border: 5px rgb(175, 175, 175);
+}
+
+/* app setting  page */
+#setting-card {
+  font-style: italic;
+  padding: 1rem;
+  position: absolute;
+  top: 20%;
+  left: 24%;
+  right: 0;
+  overflow: hidden;
+  /* margin: 0 auto; */
+  /* margin-top: 155px;
+  margin-bottom: 150px; */
+  background-color: #f0f0f0;
+  border: 5px rgb(175, 175, 175);
 }
 
 /* NAVBAR  */

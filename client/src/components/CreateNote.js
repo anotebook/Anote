@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { withRouter } from 'react-router-dom';
 import {
   Card,
   InputGroup,
@@ -39,11 +40,24 @@ class CreateNote extends Component {
   handleCreateNote = () => {
     const title = this.state.title;
     const visibility = this.state.visibility;
-    axios().post('/notes/create', {
-      title,
-      visibility,
-      timestamp: Date.now()
-    });
+    const locState = this.props.location.state;
+    let from = null;
+    if (locState) from = locState.from;
+    let folder = 'root';
+    if (from && from.startsWith('/folders/show/')) {
+      folder = from.substr(from.lastIndexOf('/') + 1);
+    }
+    axios()
+      .post('/notes/create', {
+        title,
+        visibility,
+        folder,
+        timestamp: Date.now()
+      })
+      .then(res => {
+        const note = res.data;
+        this.props.history.push(`/notes/open/${note.id}`, { note });
+      });
   };
 
   render() {
@@ -100,4 +114,4 @@ class CreateNote extends Component {
   }
 }
 
-export default CreateNote;
+export default withRouter(CreateNote);
