@@ -4,12 +4,13 @@ import mongoose from 'mongoose';
 
 import notesRoute from './routes/notes';
 import usersRoute from './routes/user';
+import xlistRoute from './routes/xlist';
 
 // Configure environment variables for server
 dotenv.config();
 
 const app = express();
-const port = process.env.PORT || 8000;
+const port = process.env.PORT || 5000;
 
 // Base url for our api
 const baseUrl = '/api/v1';
@@ -31,5 +32,6 @@ app.get('/', (req, res) => {
 
 app.use(`${baseUrl}/notes`, notesRoute);
 app.use(`${baseUrl}/users`, usersRoute);
+app.use(`${baseUrl}/xlist`, xlistRoute);
 
 app.listen(port, () => `Listening on port ${port}`);

@@ -10,6 +10,7 @@ import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
+import Xlist from './xlist';
 
 import toggleMenu from '../actions/toggleMenu';
 
@@ -136,6 +137,12 @@ class App extends Component {
               path="/profile"
               component={Profile}
               componentProps={{ user: this.props.user }}
+              loggedIn={this.props.loggedIn}
+            />
+
+            <PrivateRoute
+              path="/xlist"
+              component={Xlist}
               loggedIn={this.props.loggedIn}
             />
           </Switch>
