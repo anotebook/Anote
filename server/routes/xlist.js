@@ -88,7 +88,9 @@ const createXlistCallback = (req, res) => {
       if (!result) return;
       res.send(result);
     })
-    .catch(err => res.status(500).send(err));
+    .catch(err => {
+      res.status(500).send(err);
+    });
 
   return 0;
 };
@@ -119,7 +121,7 @@ router.get('/me', auth, (req, res) => {
 
       res.json(lightWeightXlists);
     })
-    .catch(err => {
+    .catch(() => {
       res.status(500).send('Internal server error. Try again!');
     });
 });
