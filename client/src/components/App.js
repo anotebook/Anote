@@ -10,11 +10,13 @@ import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
+import SettingForm from './SettingForm';
 import Xlist from './xlist';
 
 import toggleMenu from '../actions/toggleMenu';
 
 import '../App.css';
+import { changeLoginState } from '../actions';
 
 /* A private routing component to redirect a user to login page if
 protected pages are accessed by Url or any mean */
@@ -120,6 +122,13 @@ class App extends Component {
             <PrivateRoute
               path="/notes"
               component={NoteContainer}
+              loggedIn={this.props.loggedIn}
+            />
+
+            <PrivateRoute
+              exact
+              path="/settings/update"
+              component={SettingForm}
               loggedIn={this.props.loggedIn}
             />
 
