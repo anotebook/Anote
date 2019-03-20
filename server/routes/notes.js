@@ -17,6 +17,7 @@ const app = express.Router();
 app.post('/create', (req, res) => {
   // Get the auth token of the user which sent the request
   const idToken = req.header('Authorization');
+
   // Verify the user and then continue further steps
   verifyUser(idToken)
     .then(user => {
@@ -68,7 +69,7 @@ app.get('/get/:id', (req, res) => {
   verifyUser(idToken)
     .then(user => {
       // Check if user exists
-      return User.findOne(user);
+      return User.findOne({ uid: user.uid });
     })
     .then(user => {
       if (user === null)
@@ -102,7 +103,7 @@ app.get('/view/:id', (req, res) => {
   verifyUser(idToken)
     .then(user => {
       // Check if user exists
-      return User.findOne(user);
+      return User.findOne({ uid: user.uid });
     })
     .then(user => {
       if (user === null)
@@ -117,8 +118,43 @@ app.get('/view/:id', (req, res) => {
     })
     .catch(err => {
       const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
       // Verification failed
-      res.status(code).json({ reason: err.reason || 'Internal server error' });
+      res.status(code).json({ reason });
+    });
+});
+
+/*
+ * Handles requests to update the notes
+ */
+app.put('/update', (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // Check if user exists
+      return User.findOne({ uid: user.uid });
+    })
+    .then(user => {
+      // If user not found, throw an error
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
+
+      // Get the id, title and content of the new note to update
+      const { id, title, content } = req.body;
+      // If user exists, update the note
+      return Note.findOneAndUpdate({ id }, { $set: { title, content } });
+    })
+    .then(oldNote => {
+      // Successful, send success code with old note
+      res.status(200).json({ prev: oldNote });
+    })
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      // Verification failed
+      res.status(code).json({ reason });
     });
 });
 
