@@ -112,6 +112,10 @@
   border: 5px rgb(175, 175, 175);
 }
 
+/*setting form */
+.settingForm {
+  margin-top: 13%;
+}
 /* NAVBAR  */
 
 .sideNav {

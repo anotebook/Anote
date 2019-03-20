@@ -10,6 +10,7 @@ import Profile from './Profile';
 import AppSetting from './AppSetting';
 import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
+import SettingForm from './SettingForm';
 
 import toggleMenu from '../actions/toggleMenu';
 
@@ -119,6 +120,13 @@ class App extends Component {
             <PrivateRoute
               path="/notes"
               component={NoteContainer}
+              loggedIn={this.props.loggedIn}
+            />
+
+            <PrivateRoute
+              exact
+              path="/settings/update"
+              component={SettingForm}
               loggedIn={this.props.loggedIn}
             />
 
