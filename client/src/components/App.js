@@ -16,7 +16,6 @@ import Xlist from './xlist';
 import toggleMenu from '../actions/toggleMenu';
 
 import '../App.css';
-import { changeLoginState } from '../actions';
 
 /* A private routing component to redirect a user to login page if
 protected pages are accessed by Url or any mean */
@@ -123,6 +122,14 @@ class App extends Component {
               path="/notes"
               component={NoteContainer}
               loggedIn={this.props.loggedIn}
+              componentProps={{ create: 'note' }}
+            />
+            {/* Show folder w/ associated functions to the user */}
+            <PrivateRoute
+              path="/folders"
+              component={NoteContainer}
+              loggedIn={this.props.loggedIn}
+              componentProps={{ create: 'folder' }}
             />
 
             <PrivateRoute

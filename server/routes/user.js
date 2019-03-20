@@ -32,7 +32,7 @@ app.post('/create', (req, res) => {
     .then(user => {
       // Verification successful!
 
-      // Find id user exists in databse
+      // Find if user exists in databse
       User.findOne({ uid: user.uid })
         .then(async result => {
           // If user doesn't exist, create one. Else, return data
@@ -43,6 +43,8 @@ app.post('/create', (req, res) => {
               name: 'root',
               owner: user.uid,
               timestamp: Date.now(),
+              folder: 'root',
+              visibility: 0,
               folders: [],
               groups: [],
               notes: []
@@ -59,11 +61,15 @@ app.post('/create', (req, res) => {
             res.status(200).json(result);
           }
         })
-        .catch(() => res.status(500).json({ reason: 'Internal error' }));
+        .catch((/* err */) => {
+          res.status(500).json({ reason: 'Internal error' });
+        });
     })
-    .catch(err => {
+    .catch((/* err */) => {
       // Verification failed
-      res.status(400).json({ reason: `Authentication failed!\n${err}` });
+      res.status(400).json({
+        reason: 'Authentication failed!'
+      });
     });
 });
 
