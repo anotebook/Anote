@@ -67,4 +67,32 @@ app.post('/create', (req, res) => {
     });
 });
 
+/*
+ * It updates the user settings on request.
+ * It verifies the user and then update the setting.
+ */
+
+app.post('/updateSetting', (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // get required data to update setting
+      const { userHandle, fontSize, fontColor } = req.body;
+      // make a setting object
+      const setting = { fontSize, fontColor };
+      return User.findOneAndUpdate(
+        { uid: user.uid },
+        { $set: { setting, userHandle } }
+      );
+    })
+    .then(setting => res.status(200).json(setting))
+    .catch(err => {
+      const code = err.code || 500;
+      // Verification failed
+      res.status(code).json({ reason: err.reason || 'Internal server error' });
+    });
+});
+
 export default app;

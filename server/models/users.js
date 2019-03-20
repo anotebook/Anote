@@ -25,6 +25,11 @@ const userSchema = new mongoose.Schema({
   },
   root: {
     type: Object
+  },
+  userHandle: { type: String, default: 'Me' },
+  setting: {
+    fontSize: { type: Number, default: 12 },
+    fontColor: { type: String, default: 'black' }
   }
 });
 
