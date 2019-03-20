@@ -16,7 +16,6 @@ import Xlist from './xlist';
 import toggleMenu from '../actions/toggleMenu';
 
 import '../App.css';
-import { changeLoginState } from '../actions';
 
 /* A private routing component to redirect a user to login page if
 protected pages are accessed by Url or any mean */
