@@ -52,8 +52,8 @@ app.post('/create', (req, res) => {
     .then(note => res.status(200).json(note))
     .catch(err => {
       const code = err.code || 500;
-      // Verification failed
-      res.status(code).json({ reason: err.reason || 'Internal server error' });
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
     });
 });
 
@@ -86,8 +86,8 @@ app.get('/get/:id', (req, res) => {
     })
     .catch(err => {
       const code = err.code || 500;
-      // Verification failed
-      res.status(code).json({ reason: err.reason || 'Internal server error' });
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
     });
 });
 
@@ -119,7 +119,6 @@ app.get('/view/:id', (req, res) => {
     .catch(err => {
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
-      // Verification failed
       res.status(code).json({ reason });
     });
 });
@@ -153,7 +152,43 @@ app.put('/update', (req, res) => {
     .catch(err => {
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
-      // Verification failed
+      res.status(code).json({ reason });
+    });
+});
+
+/*
+ * Handles requests to delete the note
+ */
+
+app.delete('/delete/:id', (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // Check if user exists
+      return User.findOne({ uid: user.uid });
+    })
+    .then(user => {
+      // If user not found, throw an error
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
+
+      // Get the id of the note to be deleted
+      const id = req.params.id;
+      return Note.deleteOne({ id });
+    })
+    .then(({ ok, n }) => {
+      // If any error (n != 1), throw error
+      if (ok !== 1)
+        throw Object({ code: 500, reason: 'Internal server error' });
+
+      // Successfully deleted, send success response
+      res.status(200).json({ reason: `Success! ${n} documents deleted`, n });
+    })
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
     });
 });
