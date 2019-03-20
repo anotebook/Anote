@@ -21,9 +21,9 @@ class ShowNotes extends Component {
       style={{ ...props.style }}
     >
       <ul>
-        <li>Note</li>
-        <li>Group</li>
-        <li>Folder</li>
+        <li id="create$note">Note</li>
+        <li id="create$group">Group</li>
+        <li id="create$folder">Folder</li>
       </ul>
     </Popover>
   );
@@ -36,8 +36,10 @@ class ShowNotes extends Component {
   // A click on popover for creation is handled here
   // When it is clicked, user is redirected to respective addition page
   handleCreateClick = e => {
-    if (e.target.nodeName === 'LI') {
-      this.props.history.push('/notes/create', {
+    const node = e.target;
+    if (node.nodeName === 'LI') {
+      const create = node.id.split('$')[1];
+      this.props.history.push(`/${create}s/create`, {
         from: this.props.history.location.pathname
       });
     }

@@ -9,12 +9,20 @@ const folderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  owner: {
-    type: String,
+  visibility: {
+    type: Number,
     required: true
   },
   timestamp: {
     type: Number,
+    required: true
+  },
+  owner: {
+    type: String,
+    required: true
+  },
+  folder: {
+    type: String,
     required: true
   },
   folders: {

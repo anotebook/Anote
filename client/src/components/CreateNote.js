@@ -8,12 +8,17 @@ import {
   Button,
   ListGroup
 } from 'react-bootstrap';
+import PropTypes from 'prop-types';
 
 import axios from '../utils/axios';
 
 // Component to create a note
 // It asks for note's title and its visibilty to create a note
 class CreateNote extends Component {
+  static propTypes = {
+    create: PropTypes.string.isRequired
+  };
+
   state = {
     title: '',
     visibility: 0
@@ -48,15 +53,15 @@ class CreateNote extends Component {
       folder = from.substr(from.lastIndexOf('/') + 1);
     }
     axios()
-      .post('/notes/create', {
+      .post(`/${this.props.create}s/create`, {
         title,
         visibility,
-        folder,
-        timestamp: Date.now()
+        folder
       })
       .then(res => {
-        const note = res.data;
-        this.props.history.push(`/notes/open/${note.id}`, { note });
+        const created = res.data;
+        const route = `${this.props.create}s/open`;
+        this.props.history.push(`/${route}/${created.id}`, { created });
       });
   };
 
@@ -64,7 +69,7 @@ class CreateNote extends Component {
     return (
       // Card to input the note's initial info
       <Card className="my-auto w-sm-75 mx-sm-auto">
-        <Card.Header>Create note</Card.Header>
+        <Card.Header>Create {this.props.create}</Card.Header>
         <Card.Body>
           {/* Title for the note */}
           <Card.Title>
