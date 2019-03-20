@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import notesRoute from './routes/notes';
 import usersRoute from './routes/user';
 import xlistRoute from './routes/xlist';
+import foldersRoute from './routes/folders';
 
 // Configure environment variables for server
 dotenv.config();
@@ -33,5 +34,6 @@ app.get('/', (req, res) => {
 app.use(`${baseUrl}/notes`, notesRoute);
 app.use(`${baseUrl}/users`, usersRoute);
 app.use(`${baseUrl}/xlist`, xlistRoute);
+app.use(`${baseUrl}/folders`, foldersRoute);
 
 app.listen(port, () => `Listening on port ${port}`);

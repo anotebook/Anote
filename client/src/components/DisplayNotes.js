@@ -21,10 +21,14 @@ class DisplayNotes extends Component {
 
   // As the component mounts, fetch all the notes/grp/folder
   componentDidMount = () => {
-    const path = this.props.history.location.pathname;
+    // Get the path
+    let path = this.props.history.location.pathname;
+    // Extract the folder in which the note/folder has to be created
     let folder = 'root';
-    if (path.startsWith('/folders/show/'))
-      folder = path.substr(path.lastIndexOf('/') + 1);
+    // Remove `/` if path has any trailing `/`
+    if (path.endsWith('/')) path = path.substr(0, path.length - 1);
+    // Get the folder  id
+    if (path.startsWith('/folders/open/')) folder = path.substr(14);
     axios()
       .get(`/${this.props.type}s/get/${folder}`)
       // Update the state to show the fetched data

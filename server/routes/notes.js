@@ -1,5 +1,5 @@
-import hash from 'object-hash';
 import express from 'express';
+import hash from 'object-hash';
 
 import verifyUser from '../VerifyUser';
 import Note from '../models/notes';
@@ -31,12 +31,12 @@ app.post('/create', (req, res) => {
       /* If user exists, create the note */
 
       // Create note and insert to the database
-      const { title, visibility, timestamp } = req.body;
+      const { title, visibility } = req.body;
       // If folder is root, get the root folder's id
       let { folder } = req.body;
       if (folder === 'root') folder = user.root;
       // Create the note using the data extracted
-      const note = { title, visibility, folder, timestamp };
+      const note = { title, visibility, folder, timestamp: Date.now() };
       note.owner = user.uid;
       note.id = hash(note);
       // Update the folder with the new note's id
@@ -60,7 +60,7 @@ app.post('/create', (req, res) => {
 /*
  * Returns the notes owned by the requesting user inside a folder
  *
- * 'id` is the id of the folder
+ * `id` is the id of the folder
  */
 app.get('/get/:id', (req, res) => {
   // Get the auth token of the user which sent the request
