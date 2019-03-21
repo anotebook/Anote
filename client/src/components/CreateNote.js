@@ -49,7 +49,7 @@ class CreateNote extends Component {
     let from = null;
     if (locState) from = locState.from;
     let folder = 'root';
-    if (from && from.startsWith('/folders/show/')) {
+    if (from && from.startsWith('/folders/open/')) {
       folder = from.substr(from.lastIndexOf('/') + 1);
     }
     axios()

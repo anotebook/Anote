@@ -160,7 +160,7 @@ app.put('/update', (req, res) => {
  * Handles requests to delete the note
  */
 
-app.delete('/delete/:id', (req, res) => {
+app.delete('/delete', (req, res) => {
   // Get the auth token of the user which sent the request
   const idToken = req.header('Authorization');
   // Verify the user and then continue further steps
@@ -169,13 +169,18 @@ app.delete('/delete/:id', (req, res) => {
       // Check if user exists
       return User.findOne({ uid: user.uid });
     })
-    .then(user => {
+    .then(async user => {
       // If user not found, throw an error
       if (user === null)
         throw Object({ code: 400, reason: 'User does not exist' });
 
-      // Get the id of the note to be deleted
-      const id = req.params.id;
+      // Parent folder and id of the note
+      const { folder, id } = req.body;
+
+      // Remove note's id from the folder's notes list
+      await Folder.findOneAndUpdate({ id: folder }, { $pull: { notes: id } });
+
+      // Delete the note
       return Note.deleteOne({ id });
     })
     .then(({ ok, n }) => {
