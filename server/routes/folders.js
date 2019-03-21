@@ -79,7 +79,7 @@ app.get('/get/:id', (req, res) => {
       let folder = req.params.id;
       if (folder === 'root') folder = user.root;
       // If user exists, return the folders field from selected folder
-      return Folder.findOne({ id: folder, owner: user.uid }, 'folders');
+      return Folder.find({ owner: user.uid, folder });
     })
     .then(folders => {
       // Successfully send the folders
