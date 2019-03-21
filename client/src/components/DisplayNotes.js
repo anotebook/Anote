@@ -77,7 +77,7 @@ class DisplayNotes extends Component {
           const { id, folder } = this.state.contentArray[index];
           // Send the delete request
           axios()
-            .delete(`/${folder}s/delete`, { id, folder })
+            .delete(`/${this.props.type}s/delete`, { data: { id, folder } })
             .then((/* res */) => {
               this.setState(prevState => {
                 prevState.contentArray.splice(index, 1);

@@ -175,7 +175,7 @@ app.delete('/delete', (req, res) => {
         throw Object({ code: 400, reason: 'User does not exist' });
 
       // Parent folder and id of the note
-      const { folder, id } = req.body;
+      const { id, folder } = req.body;
 
       // Remove note's id from the folder's notes list
       await Folder.findOneAndUpdate({ id: folder }, { $pull: { notes: id } });

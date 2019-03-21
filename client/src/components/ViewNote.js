@@ -90,7 +90,8 @@ class ViewNote extends Component {
       this.state.editorState.getCurrentContent()
     );
     // Get the id and title of the note
-    const { id, title } = this.state.note;
+    const { id } = this.state.note;
+    const title = this.state.title;
     // Send the update request
     axios()
       .put('/notes/update', {
