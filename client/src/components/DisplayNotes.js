@@ -72,10 +72,10 @@ class DisplayNotes extends Component {
         // If the button is clicked, delete the button
         case 'BUTTON': {
           const index = parseInt(clicked.id, 10);
-          const noteId = this.state.contentArray[index].id;
+          const { id, folder } = this.state.contentArray[index];
           // Send the delete request
           axios()
-            .delete(`/notes/delete/${noteId}`)
+            .delete('/notes/delete', { id, folder })
             .then((/* res */) => {
               this.setState(prevState => {
                 prevState.contentArray.splice(index, 1);
