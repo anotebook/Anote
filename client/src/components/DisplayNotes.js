@@ -64,9 +64,11 @@ class DisplayNotes extends Component {
       switch (clicked.nodeName) {
         // If the card is clicked, open the card
         case 'DIV': {
-          const note = this.state.contentArray[parseInt(clicked.id, 10)];
+          const item = this.state.contentArray[parseInt(clicked.id, 10)];
           // Route to opening the note
-          this.props.history.push(`/notes/open/${note.id}`, { note });
+          this.props.history.push(`/${this.props.type}s/open/${item.id}`, {
+            item
+          });
           break;
         }
         // If the button is clicked, delete the button
