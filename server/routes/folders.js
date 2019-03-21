@@ -58,4 +58,71 @@ app.post('/create', (req, res) => {
     });
 });
 
+/*
+ * Returns the folders owned by the requesting user inside a folder
+ *
+ * `id` is the id of the folder
+ */
+app.get('/get/:id', (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // Check if user exists
+      return User.findOne({ uid: user.uid });
+    })
+    .then(user => {
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
+
+      let folder = req.params.id;
+      if (folder === 'root') folder = user.root;
+      // If user exists, return the folders field from selected folder
+      return Folder.findOne({ id: folder, owner: user.uid }, 'folders');
+    })
+    .then(folders => {
+      // Successfully send the folders
+      res.status(200).json(folders);
+    })
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
+});
+
+/*
+ * Handles the requests to update the folder
+ */
+app.put('/update', (req, res) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      // Check if user exists
+      return User.findOne({ uid: user.uid });
+    })
+    .then(user => {
+      // If user not found, throw an error
+      if (user === null)
+        throw Object({ code: 400, reason: 'User does not exist' });
+
+      // Get the id, title and content of the folder to be updated
+      const { id, name, visibility } = req.body;
+      // Update the folder
+      return Folder.findOneAndUpdate({ id }, { $set: { name, visibility } });
+    })
+    .then(folder => {
+      // Send success code
+      res.status(200).json(folder);
+    })
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
+});
+
 export default app;
