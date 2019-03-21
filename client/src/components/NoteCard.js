@@ -6,9 +6,13 @@ import PropTypes from 'prop-types';
 class NoteCard extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
-    title: PropTypes.string.isRequired,
+    title: PropTypes.string,
     type: PropTypes.string.isRequired,
     updated: PropTypes.number
+  };
+
+  static defaultProps = {
+    title: ''
   };
 
   static defaultProps = {
