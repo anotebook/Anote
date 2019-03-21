@@ -53,9 +53,6 @@ class ShowNotes extends Component {
           <Tab eventKey="notes" title="Notes" className="h-100">
             <DisplayNotes type="note" />
           </Tab>
-          <Tab eventKey="groups" title="Groups">
-            <DisplayNotes type="group" />
-          </Tab>
           <Tab eventKey="folders" title="Folders">
             <DisplayNotes type="folder" />
           </Tab>
