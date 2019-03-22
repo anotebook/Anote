@@ -31,11 +31,27 @@ const changeUserData = (user = null, action) => {
   return user;
 };
 
+// when app setting is to be updated
+const changeAppSetting = (
+  setting = {
+    userHandle: 'ME',
+    fontSize: 12,
+    fontColor: 'black'
+  },
+  action
+) => {
+  // return new app setting if conition matched
+  if (action.type === 'CHANGE_SETTING') return action.payload.setting;
+  // return default setting
+  return setting;
+};
+
 // Combine the reducers
 export default combineReducers({
   loggedIn: changeLoginReducer,
   verified: changeVerifyReducer,
   user: changeUserData,
+  setting: changeAppSetting,
   toggleMenu,
   initialCardsToDisplay: cardsToDisplayToggle
 });

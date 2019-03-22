@@ -33,6 +33,16 @@ export const changeUserData = user => {
   };
 };
 
+// when app setting is changed
+export const changeAppSetting = setting => {
+  return {
+    type: 'CHANGE_SETTING',
+    payload: {
+      setting
+    }
+  };
+};
+
 // // action for signing in user
 // export const SingInUser = loggedIn => {
 //     return {

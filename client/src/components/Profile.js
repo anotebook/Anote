@@ -1,17 +1,20 @@
 import React from 'react';
 import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 
 /* This component shows the Profile of the User */
 class Profile extends React.Component {
   static propTypes = {
     user: PropTypes.shape({
       _id: PropTypes.string.isRequired,
-      about: PropTypes.string.isRequired,
+      about: PropTypes.string,
       email: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       picture: PropTypes.string.isRequired,
       uid: PropTypes.string.isRequired,
+      userHandle: PropTypes.string.isRequired,
       username: PropTypes.string.isRequired
     }).isRequired
   };
@@ -44,6 +47,11 @@ class Profile extends React.Component {
 
             <ListGroup className="list-group-flush">
               <ListGroupItem>
+                UserHandle
+                <br />
+                <em>{this.props.userHandle}</em>
+              </ListGroupItem>
+              <ListGroupItem>
                 Email
                 <br />
                 <em>{email}</em>
@@ -61,4 +69,19 @@ class Profile extends React.Component {
   }
 }
 
-export default Profile;
+// Get the required props from the state
+const mapStateToProps = state => {
+  return {
+    // get user settings
+    userHandle: state.setting.userHandle
+  };
+};
+
+export default withRouter(
+  connect(
+    /* State */
+    mapStateToProps,
+    /* Action creators */
+    {}
+  )(Profile)
+);

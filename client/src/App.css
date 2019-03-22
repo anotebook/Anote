@@ -98,7 +98,7 @@
 
 /* app setting  page */
 #setting-card {
-  font-style: italic;
+  font-style: arial;
   padding: 1rem;
   position: absolute;
   top: 20%;
@@ -115,6 +115,13 @@
 /*setting form */
 .settingForm {
   margin-top: 13%;
+}
+
+/* Appsetting button */
+.btn-setting {
+  max-width: 74%;
+  margin-top: 5%;
+  margin-left: 13%;
 }
 /* NAVBAR  */
 
