@@ -2,6 +2,7 @@
  * Don't write any other specific styles in this section
  */
 
+/* TODO: Add media queries to center card */
 @media screen and (min-width: 576px) {
   .w-sm-75 {
     width: 75% !important;
@@ -86,7 +87,7 @@
   padding: 1rem;
   position: absolute;
   top: 20%;
-  left: 18%;
+  left: 17%;
   right: 0;
   overflow: hidden;
   /* margin: 0 auto; */

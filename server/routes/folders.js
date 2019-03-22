@@ -125,4 +125,6 @@ app.put('/update', (req, res) => {
     });
 });
 
+/* TODO: add delete api for folder */
+
 export default app;
