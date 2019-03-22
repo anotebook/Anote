@@ -19,20 +19,44 @@ class DisplayNotes extends Component {
     contentArray: []
   };
 
-  // As the component mounts, fetch all the notes/grp/folder
-  componentDidMount = () => {
-    // Get the path
-    let path = this.props.history.location.pathname;
-    // Extract the folder in which the note/folder has to be created
+  /*
+   * It is called when cotent needs to be updated
+   *
+   * It first clears the current content
+   * Then, fetches the new content and updates the list
+   */
+  getContent = () => {
+    // Clear current list
+    this.setState({ contentArray: [] });
+
+    // Assume root folder
     let folder = 'root';
-    // Remove `/` if path has any trailing `/`
-    if (path.endsWith('/')) path = path.substr(0, path.length - 1);
-    // Get the folder  id
-    if (path.startsWith('/folders/open/')) folder = path.substr(14);
+    // Update the folder if not root
+    const _id = this.props.match.params.id;
+    if (_id) folder = _id;
+    // Get the new content
     axios()
       .get(`/${this.props.type}s/get/${folder}`)
       // Update the state to show the fetched data
       .then(res => this.setState({ contentArray: res.data }));
+  };
+
+  /*
+   * Called when component updates
+   *
+   * If the id of the folder changes,
+   * call the `getContent()` to update the content
+   */
+  componentDidUpdate = prevProps => {
+    // If folder id changes, update the content
+    if (prevProps.match.params.id !== this.props.match.params.id) {
+      this.getContent();
+    }
+  };
+
+  // When the component mounts, call the `getContent()` to update the content
+  componentDidMount = () => {
+    this.getContent();
   };
 
   // It returns the clicked node if it's either note card/note delete button
@@ -110,7 +134,6 @@ class DisplayNotes extends Component {
             id={index.toString()}
             type={this.props.type}
             title={item.title || item.name}
-            text={item.content}
             updated={item.timestamp}
           />
         ))}

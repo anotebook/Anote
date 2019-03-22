@@ -24,7 +24,12 @@ class NoteContainer extends Component {
           path={`/${this.props.create}s/create`}
           render={() => <CreateNote create={this.props.create} />}
         />
-        <Route exact path="/folders/open/:id" component={ShowNotes} />
+        <Route
+          exact
+          path="/folders/open/:id([\d|a-f]{40})"
+          sensitive={true}
+          component={ShowNotes}
+        />
       </>
     );
   }
