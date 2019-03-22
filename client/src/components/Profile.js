@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
+import { Card, ListGroup, ListGroupItem, Row, Col } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -24,18 +24,16 @@ class Profile extends React.Component {
     let email = '';
     let about = '';
     let picture = '';
-    let username = '';
     if (this.props.user) {
       name = this.props.user.name;
       email = this.props.user.email;
       about = this.props.user.about;
       picture = this.props.user.picture;
-      username = this.props.user.username;
     }
 
     return (
       <div className="d-flex flex-column justify-content-center align-items-center h-100">
-        <Card id="profile-card" style={{ width: '60%' }}>
+        <Card id="profile-card" style={{ width: '70%' }}>
           <Card.Body>
             <Card.Title className="d-flex align-items-center">
               <img src={picture} alt="Profile" />
@@ -47,19 +45,20 @@ class Profile extends React.Component {
 
             <ListGroup className="list-group-flush">
               <ListGroupItem>
-                UserHandle
-                <br />
-                <em>{this.props.userHandle}</em>
+                <Row>
+                  <Col sm={4}>UserHandle</Col>
+                  <Col>
+                    <em>{this.props.userHandle}</em>
+                  </Col>
+                </Row>
               </ListGroupItem>
               <ListGroupItem>
-                Email
-                <br />
-                <em>{email}</em>
-              </ListGroupItem>
-              <ListGroupItem>
-                Username
-                <br />
-                <em>{username}</em>
+                <Row>
+                  <Col sm={4}>Email</Col>
+                  <Col>
+                    <em>{email}</em>
+                  </Col>
+                </Row>
               </ListGroupItem>
             </ListGroup>
           </Card.Body>
