@@ -11,7 +11,8 @@ import About from './About';
 import {
   changeLoginState,
   changeVerifyState,
-  changeUserData
+  changeUserData,
+  changeAppSetting
 } from '../actions';
 
 /* Component which handles all the task required for user signin/logout */
@@ -52,7 +53,14 @@ class GoogleAuth extends React.Component {
         // Verification successful! Update state and user data
         this.props.changeVerifyState(true);
         this.props.changeUserData(res.data);
-
+        // update app setting on successful verification
+        this.props.changeAppSetting(
+          Object.assign(
+            {},
+            { userHandle: res.data.userHandle },
+            res.data.setting
+          )
+        );
         if (this.props.location.state)
           this.props.history.push(this.props.location.state.from.pathname);
       })
@@ -146,7 +154,8 @@ export default withRouter(
     {
       changeLoginState,
       changeVerifyState,
-      changeUserData
+      changeUserData,
+      changeAppSetting
     }
   )(GoogleAuth)
 );
