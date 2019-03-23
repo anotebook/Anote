@@ -30,6 +30,14 @@ const userSchema = new mongoose.Schema({
   setting: {
     fontSize: { type: Number, default: 12 },
     fontColor: { type: String, default: 'black' }
+  },
+  // store path of shared folders
+  sharedFolders: {
+    type: []
+  },
+  // store path of shared notes
+  sharedNotes: {
+    type: []
   }
 });
 
