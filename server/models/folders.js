@@ -33,6 +33,16 @@ const folderSchema = new mongoose.Schema({
   },
   notes: {
     type: []
+  },
+  /* path is in format "a$b$c$F" where a is root folder Id &  b,c are 
+     parents folders Id and F is current Folder Id. */
+  path: {
+    type: String,
+    required: true
+  },
+  /* contain id of user to which this folder is being shared */
+  shareduserId: {
+    type: String
   }
 });
 
