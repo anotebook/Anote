@@ -21,14 +21,11 @@ const folderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  folder: {
+  parentFolder: {
     type: String,
     required: true
   },
   folders: {
-    type: []
-  },
-  groups: {
     type: []
   },
   notes: {
@@ -40,9 +37,21 @@ const folderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  /* contain id of user to which this folder is being shared */
-  shareduserId: {
-    type: String
+  xlist: {
+    type: [
+      {
+        email: {
+          type: String,
+          required: true
+        },
+        visibility: {
+          // 0 for read-only and 1 for read-write
+          type: Number,
+          required: true
+        }
+      }
+    ],
+    required: true
   }
 });
 

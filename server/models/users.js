@@ -33,6 +33,7 @@ const userSchema = new mongoose.Schema({
   },
   // store path of shared folders
   sharedFolders: {
+    // sharing access
     type: []
   },
   // store path of shared notes
