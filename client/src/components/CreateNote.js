@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
 import {
   Card,
@@ -16,7 +17,10 @@ import axios from '../utils/axios';
 // It asks for note's title and its visibilty to create a note
 class CreateNote extends Component {
   static propTypes = {
-    create: PropTypes.string.isRequired
+    // It stores what is being created [note/folder]
+    create: PropTypes.string.isRequired,
+    // User's root folder
+    userRootFolder: PropTypes.string.isRequired
   };
 
   state = {
@@ -48,7 +52,7 @@ class CreateNote extends Component {
     const locState = this.props.location.state;
     let from = null;
     if (locState) from = locState.from;
-    let folder = 'root';
+    let folder = this.props.userRootFolder;
     if (from && from.startsWith('/folders/open/')) {
       folder = from.substr(from.lastIndexOf('/') + 1);
     }
@@ -66,6 +70,7 @@ class CreateNote extends Component {
   };
 
   render() {
+    /* console.log(this.props.location.state); */
     return (
       // Card to input the note's initial info
       <Card className="my-auto w-sm-75 mx-sm-auto">
@@ -119,4 +124,11 @@ class CreateNote extends Component {
   }
 }
 
-export default withRouter(CreateNote);
+// Get the required props from the state
+const mapStateToProps = state => {
+  return {
+    userRootFolder: state.user.root
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(CreateNote));

@@ -22,7 +22,6 @@ class ShowNotes extends Component {
     >
       <ul>
         <li id="create$note">Note</li>
-        <li id="create$group">Group</li>
         <li id="create$folder">Folder</li>
       </ul>
     </Popover>

@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
 import { CardColumns } from 'react-bootstrap';
@@ -11,7 +12,9 @@ import axios from '../utils/axios';
 class DisplayNotes extends Component {
   static propTypes = {
     // Type [note/grp/folder]
-    type: PropTypes.string.isRequired
+    type: PropTypes.string.isRequired,
+    // User's root folder
+    userRootFolder: PropTypes.string.isRequired
   };
 
   state = {
@@ -30,7 +33,7 @@ class DisplayNotes extends Component {
     this.setState({ contentArray: [] });
 
     // Assume root folder
-    let folder = 'root';
+    let folder = this.props.userRootFolder;
     // Update the folder if not root
     const _id = this.props.match.params.id;
     if (_id) folder = _id;
@@ -98,10 +101,10 @@ class DisplayNotes extends Component {
         // If the button is clicked, delete the button
         case 'BUTTON': {
           const index = parseInt(clicked.id, 10);
-          const { id, folder } = this.state.contentArray[index];
+          const { id } = this.state.contentArray[index];
           // Send the delete request
           axios()
-            .delete(`/${this.props.type}s/delete`, { data: { id, folder } })
+            .delete(`/${this.props.type}s/delete/${id}`)
             .then((/* res */) => {
               this.setState(prevState => {
                 prevState.contentArray.splice(index, 1);
@@ -142,4 +145,11 @@ class DisplayNotes extends Component {
   }
 }
 
-export default withRouter(DisplayNotes);
+// Get the required props from the state
+const mapStateToProps = state => {
+  return {
+    userRootFolder: state.user.root
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(DisplayNotes));
