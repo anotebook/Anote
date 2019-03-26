@@ -5,7 +5,6 @@ import verifyUser from '../VerifyUser';
 import Folder from '../models/folders';
 import XList from '../models/xlist';
 import Notes from '../models/notes';
-import User from '../models/users';
 
 // eslint-disable-next-line new-cap
 const app = express.Router();
@@ -20,28 +19,16 @@ const auth = (req, res, next) => {
       req.user = user;
       next();
     })
-    .catch(err =>
-      res.status(404).json({ error: `authentication failed!\n${err}` })
-    );
+    .catch(() => res.status(404).json({ error: 'authentication failed!' }));
 };
 
 app.post('/create', auth, (req, res) => {
-  // If folder is root, get the root folder's id
-  const { folder } = req.body;
-  let parentFolder = folder;
-
-  const userPromise = User.findOne({ uid: req.user.uid });
-  // check whether the supplied folder exists or not
-  const folderPromise = userPromise.then(user => {
-    parentFolder = user.root;
-    return Folder.findOne({
-      id: parentFolder,
-      owner: req.user.uid
-    });
-  });
-
-  Promise.all([folderPromise, userPromise])
-    .then(([result]) => {
+  const parentFolder = req.body.folder;
+  Folder.findOne({
+    id: parentFolder,
+    owner: req.user.uid
+  })
+    .then(result => {
       if (!result) {
         res
           .status(400)
@@ -64,14 +51,14 @@ app.post('/create', auth, (req, res) => {
       createFolder.path = `${result.path}$${createFolder.id}`;
 
       const newFolder = new Folder(createFolder);
-      // Add the folder's id to the list of its parent's folders' list
-      const updatePromise = Folder.findOneAndUpdate({ id: parentFolder });
-      const savePromise = newFolder.save();
-
-      return Promise.all([updatePromise, savePromise]);
+      return newFolder.save();
     })
-    .then(([parent, result]) => res.status(200).json(result))
+    .then(result => {
+      /* console.log(result); */
+      res.status(200).json(result);
+    })
     .catch(err => {
+      /* console.log(err); */
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
@@ -83,22 +70,14 @@ app.post('/create', auth, (req, res) => {
  * inside a folder-id mentioned
  */
 app.get('/get/:id', auth, (req, res) => {
-  const userPromise = User.findOne({ uid: req.user.uid });
-  const folderPromise = userPromise.then(user => {
-    if (req.params.id === 'root') req.params.id = user.root;
-    return Folder.find({ parentFolder: req.params.id, owner: req.user.uid });
-  });
-
-  Promise.all([folderPromise, userPromise])
-    .then(([folder]) => {
-      if (!folder.length)
-        return res.status(400).json({ folder: "Folder doesn't exists!" });
+  // TODO: Return folder details depending upon the acess
+  Folder.find({ parentFolder: req.params.id, owner: req.user.uid })
+    .then(folder => {
       return res.send(folder);
     })
     .catch(err => {
       res.status(500).send(err);
     });
-  return 0;
 });
 
 /*
@@ -225,8 +204,8 @@ app.post('/access/:type/:id', auth, (req, res) => {
 /*
  * delete specified folder
  */
-app.delete('/remove/:id', auth, (req, res) => {
-  let regexString;
+app.delete('/delete/:id', auth, (req, res) => {
+  let regex;
 
   Folder.findOne({ id: req.params.id })
     .then(folder => {
@@ -235,17 +214,18 @@ app.delete('/remove/:id', auth, (req, res) => {
         return null;
       }
 
-      regexString = `^${folder.path}[a-zA-Z0-9$]*`;
-      return Folder.remove({ path: new RegExp(regexString) });
+      regex = new RegExp(`^${folder.path}`.replace(/\$/g, '\\$'));
+      /* console.log(regex); */
+      return Folder.deleteMany({ path: regex });
     })
-    .then(deletedFolder => {
+    .then(deleteRes => {
       // response is already sent to the client
-      if (!deletedFolder) return null;
-
-      return Notes.remove({ path: new RegExp(regexString) });
+      if (!deleteRes) return null;
+      /* console.log(deleteRes); */
+      return Notes.deleteMany({ path: regex });
     })
-    .then(result => {
-      if (!result) return;
+    .then(deleteRes => {
+      if (!deleteRes) return;
       res.send('Deleted successfully!');
     })
     .catch(err => {
