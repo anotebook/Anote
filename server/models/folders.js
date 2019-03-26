@@ -9,10 +9,6 @@ const folderSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  visibility: {
-    type: Number,
-    required: true
-  },
   timestamp: {
     type: Number,
     required: true
@@ -24,12 +20,6 @@ const folderSchema = new mongoose.Schema({
   parentFolder: {
     type: String,
     required: true
-  },
-  folders: {
-    type: []
-  },
-  notes: {
-    type: []
   },
   /* path is in format "a$b$c$F" where a is root folder Id &  b,c are 
      parents folders Id and F is current Folder Id. */

@@ -5,6 +5,7 @@ import verifyUser from '../VerifyUser';
 import Folder from '../models/folders';
 import XList from '../models/xlist';
 import Notes from '../models/notes';
+import User from '../models/users';
 
 // eslint-disable-next-line new-cap
 const app = express.Router();
@@ -26,11 +27,21 @@ const auth = (req, res, next) => {
 
 app.post('/create', auth, (req, res) => {
   // If folder is root, get the root folder's id
-  let { parentFolder } = req.body;
-  if (parentFolder === 'root') parentFolder = req.user.root;
+  const { folder } = req.body;
+  let parentFolder = folder;
+
+  const userPromise = User.findOne({ uid: req.user.uid });
   // check whether the supplied folder exists or not
-  Folder.findOne({ id: parentFolder })
-    .then(result => {
+  const folderPromise = userPromise.then(user => {
+    parentFolder = user.root;
+    return Folder.findOne({
+      id: parentFolder,
+      owner: req.user.uid
+    });
+  });
+
+  Promise.all([folderPromise, userPromise])
+    .then(([result]) => {
       if (!result) {
         res
           .status(400)
@@ -45,8 +56,6 @@ app.post('/create', auth, (req, res) => {
         parentFolder,
         timestamp: Date.now(),
         owner: req.user.uid,
-        folders: [],
-        notes: [],
         // copy the parent folder access-list
         xlist: result.xlist.slice()
       };
@@ -56,15 +65,12 @@ app.post('/create', auth, (req, res) => {
 
       const newFolder = new Folder(createFolder);
       // Add the folder's id to the list of its parent's folders' list
-      const updatePromise = Folder.findOneAndUpdate(
-        { id: parentFolder },
-        { $push: { folders: createFolder.id } }
-      );
+      const updatePromise = Folder.findOneAndUpdate({ id: parentFolder });
       const savePromise = newFolder.save();
 
       return Promise.all([updatePromise, savePromise]);
     })
-    .then(([parent, folder]) => res.status(200).json(folder))
+    .then(([parent, result]) => res.status(200).json(result))
     .catch(err => {
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
@@ -75,20 +81,19 @@ app.post('/create', auth, (req, res) => {
 /*
  * Returns the folders(or notes) owned by the requesting user
  * inside a folder-id mentioned
- *
- * for getting the notes inside the mentioned folder the
- * 'type' is 'notes' and for getting the folders it is 'folders'
  */
-app.get('/:type/:id', auth, (req, res) => {
-  if (req.params.type !== 'notes' && req.params.type !== 'folders')
-    return res.status(404).json({ error: 'Invalid path!' });
+app.get('/get/:id', auth, (req, res) => {
+  const userPromise = User.findOne({ uid: req.user.uid });
+  const folderPromise = userPromise.then(user => {
+    if (req.params.id === 'root') req.params.id = user.root;
+    return Folder.find({ parentFolder: req.params.id, owner: req.user.uid });
+  });
 
-  Folder.findOne({ id: req.params.id })
-    .then(folder => {
-      if (!folder)
+  Promise.all([folderPromise, userPromise])
+    .then(([folder]) => {
+      if (!folder.length)
         return res.status(400).json({ folder: "Folder doesn't exists!" });
-      if (req.params.type === 'notes') return res.json({ notes: folder.notes });
-      return res.json({ folders: folder.folders });
+      return res.send(folder);
     })
     .catch(err => {
       res.status(500).send(err);
@@ -220,7 +225,9 @@ app.post('/access/:type/:id', auth, (req, res) => {
 /*
  * delete specified folder
  */
-app.delete('/folder/remove/:id', auth, (req, res) => {
+app.delete('/remove/:id', auth, (req, res) => {
+  let regexString;
+
   Folder.findOne({ id: req.params.id })
     .then(folder => {
       if (!folder) {
@@ -228,21 +235,14 @@ app.delete('/folder/remove/:id', auth, (req, res) => {
         return null;
       }
 
-      const regexString = `^${folder.path}[a-zA-Z0-9$]*`;
+      regexString = `^${folder.path}[a-zA-Z0-9$]*`;
       return Folder.remove({ path: new RegExp(regexString) });
     })
     .then(deletedFolder => {
       // response is already sent to the client
       if (!deletedFolder) return null;
 
-      const listOfNotesToDelete = [];
-      for (let i = 0; i < deletedFolder.length; i += 1) {
-        const notes = deletedFolder[i].notes;
-        for (let j = 0; j < notes.length; j += 1)
-          listOfNotesToDelete.push(notes[j]);
-      }
-
-      return Notes.remove({ id: { $in: listOfNotesToDelete } });
+      return Notes.remove({ path: new RegExp(regexString) });
     })
     .then(result => {
       if (!result) return;

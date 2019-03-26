@@ -20,25 +20,13 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  about: {
-    type: String
-  },
   root: {
-    type: Object
+    type: String
   },
   userHandle: { type: String, default: 'Me' },
   setting: {
     fontSize: { type: Number, default: 12 },
     fontColor: { type: String, default: 'black' }
-  },
-  // store path of shared folders
-  sharedFolders: {
-    // sharing access
-    type: []
-  },
-  // store path of shared notes
-  sharedNotes: {
-    type: []
   }
 });
 

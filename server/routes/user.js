@@ -43,13 +43,11 @@ app.post('/create', (req, res) => {
               name: 'root',
               owner: user.uid,
               timestamp: Date.now(),
-              folder: 'root',
-              visibility: 0,
-              folders: [],
-              groups: [],
-              notes: []
+              parentFolder: 'root',
+              xlist: []
             };
             folder.id = hash(folder);
+            folder.path = folder.id;
             const rootFolder = new Folder(folder);
             await rootFolder.save();
             user.root = folder.id;
