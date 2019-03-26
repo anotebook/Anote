@@ -3,50 +3,70 @@ import hash from 'object-hash';
 
 import verifyUser from '../VerifyUser';
 import Note from '../models/notes';
-import User from '../models/users';
 import Folder from '../models/folders';
 
 // eslint-disable-next-line new-cap
 const app = express.Router();
 
 /*
- * It creates a note when requested.
- * First it authenticates the user, then checks if it exists
- * and then inserts the note.
+ * Authenticate the user.
+ * After authentication, it makes the user data from Google available
+ * through the `data` field in the request object. [`req.data`]
  */
-app.post('/create', (req, res) => {
+const auth = (req, res, next) => {
   // Get the auth token of the user which sent the request
   const idToken = req.header('Authorization');
-
   // Verify the user and then continue further steps
   verifyUser(idToken)
     .then(user => {
-      // Check if user exists
-      return User.findOne({ uid: user.uid });
+      req.user = user;
+      next();
     })
-    .then(async user => {
-      if (user === null)
-        throw Object({ code: 400, reason: 'User does not exist' });
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
+};
 
-      /* If user exists, create the note */
+/*
+ * @desc: Create a note.
+ * @route: POST /notes/create
+ * @body-params:
+ *  title: Title of the note
+ *  folder: The `id` of the folder in which the note should be created
+ * @return: A JSON object containing the note created
+ */
+app.post('/create', auth, (req, res) => {
+  // User data from auth
+  const user = req.user;
+  // Note data from request
+  const { title, folder } = req.body;
 
-      // Create note and insert to the database
-      const { title, visibility } = req.body;
-      // If folder is root, get the root folder's id
-      let { folder } = req.body;
-      if (folder === 'root') folder = user.root;
-      // Create the note using the data extracted
-      const note = { title, visibility, folder, timestamp: Date.now() };
-      note.owner = user.uid;
+  // Get the folder in which the note has to be created
+  Folder.findOne({ id: folder, owner: user.uid }, 'xlist path')
+    .then(resultFolder => {
+      // If folder doesn't exists, return
+      if (resultFolder === null)
+        throw Object({
+          code: 400,
+          reason: "Requested parent folder doesn't exists"
+        });
+
+      /* Create the note and save to db */
+
+      const note = {
+        title,
+        parentFolder: folder,
+        timestamp: Date.now(),
+        owner: user.uid,
+        // copy the parent folder access-list
+        xlist: resultFolder.xlist.slice()
+      };
       note.id = hash(note);
-      // Update the folder with the new note's id
-      await Folder.findOneAndUpdate(
-        { id: folder },
-        { $push: { notes: note.id } }
-      );
-      // Note created
+      note.path = `${resultFolder.path}$${note.id}`;
+
       const newNote = new Note(note);
-      // Save to db and return the result
       return newNote.save();
     })
     .then(note => res.status(200).json(note))
@@ -58,30 +78,17 @@ app.post('/create', (req, res) => {
 });
 
 /*
- * Returns the notes owned by the requesting user inside a folder
- *
- * `id` is the id of the folder
+ * @desc: Get the notes owned by the requesting user inside a folder
+ * @route: GET /notes/get/:id
+ * @route-params:
+ *  id: id of the folder whose notes has to be fetched
+ * @return: An array containing the desired notes
  */
-app.get('/get/:id', (req, res) => {
-  // Get the auth token of the user which sent the request
-  const idToken = req.header('Authorization');
-  // Verify the user and then continue further steps
-  verifyUser(idToken)
-    .then(user => {
-      // Check if user exists
-      return User.findOne({ uid: user.uid });
-    })
-    .then(user => {
-      if (user === null)
-        throw Object({ code: 400, reason: 'User does not exist' });
-
-      let folder = req.params.id;
-      if (folder === 'root') folder = user.root;
-      // If user exists, return all the notes owned
-      return Note.find({ owner: user.uid, folder });
-    })
+app.get('/get/:id', auth, (req, res) => {
+  // TODO: Return folder details depending upon the acess
+  Note.find({ parentFolder: req.params.id, owner: req.user.uid })
     .then(notes => {
-      // Successfully send the notes
+      if (notes === null) throw Object({ code: 404, reason: 'Note not found' });
       res.status(200).json(notes);
     })
     .catch(err => {
@@ -92,28 +99,17 @@ app.get('/get/:id', (req, res) => {
 });
 
 /*
- * Returns the note requested to open
- *
- * 'id` is the id of the note
+ * @desc: Get the note requested by it's id
+ * @route: GET /notes/view/:id
+ * @route-params:
+ *  id: id of the note to be fetched
+ * @return: The requested note as JSON object
  */
-app.get('/view/:id', (req, res) => {
-  // Get the auth token of the user which sent the request
-  const idToken = req.header('Authorization');
-  // Verify the user and then continue further steps
-  verifyUser(idToken)
-    .then(user => {
-      // Check if user exists
-      return User.findOne({ uid: user.uid });
-    })
-    .then(user => {
-      if (user === null)
-        throw Object({ code: 400, reason: 'User does not exist' });
-
-      // If user exists, return all the notes owned
-      return Note.findOne({ owner: user.uid, id: req.params.id });
-    })
+app.get('/view/:id', auth, (req, res) => {
+  // TODO: Return folder details depending upon the acess
+  Note.findOne({ id: req.params.id, owner: req.user.uid })
     .then(note => {
-      // Successfully send the notes
+      if (note === null) throw Object({ code: 404, reason: 'Note not found' });
       res.status(200).json(note);
     })
     .catch(err => {
@@ -124,31 +120,23 @@ app.get('/view/:id', (req, res) => {
 });
 
 /*
- * Handles requests to update the notes
+ * @desc: Update note
+ * @route: PUT /notes/update
+ * @body-params:
+ *  id: id of the note to update
+ *  title: New title of the note
+ *  content: New content of the note
+ * @return: Old note which was stored
  */
-app.put('/update', (req, res) => {
-  // Get the auth token of the user which sent the request
-  const idToken = req.header('Authorization');
-  // Verify the user and then continue further steps
-  verifyUser(idToken)
-    .then(user => {
-      // Check if user exists
-      return User.findOne({ uid: user.uid });
-    })
-    .then(user => {
-      // If user not found, throw an error
-      if (user === null)
-        throw Object({ code: 400, reason: 'User does not exist' });
-
-      // Get the id, title and content of the new note to update
-      const { id, title, content } = req.body;
-      // If user exists, update the note
-      return Note.findOneAndUpdate({ id }, { $set: { title, content } });
-    })
-    .then(oldNote => {
-      // Successful, send success code with old note
-      res.status(200).json({ prev: oldNote });
-    })
+app.put('/update', auth, (req, res) => {
+  // TODO: Update folder details depending upon the acess
+  // Get the id, title and content of the new note to update
+  const { id, title, content } = req.body;
+  Note.findOneAndUpdate(
+    { id, owner: req.user.uid },
+    { $set: { title, content } }
+  )
+    .then(oldNote => res.status(200).json({ prev: oldNote }))
     .catch(err => {
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
@@ -157,34 +145,16 @@ app.put('/update', (req, res) => {
 });
 
 /*
- * Handles requests to delete the note
+ * @desc: Delete the note requested by `id`
+ * @route: DELETE /notes/delete/:id
+ * @route-params:
+ *  id: id of the note to be deleted
+ * @return: A JSON object specifying number of notes deleted(should be 1)
  */
-
-app.delete('/delete', (req, res) => {
-  // Get the auth token of the user which sent the request
-  const idToken = req.header('Authorization');
-  // Verify the user and then continue further steps
-  verifyUser(idToken)
-    .then(user => {
-      // Check if user exists
-      return User.findOne({ uid: user.uid });
-    })
-    .then(async user => {
-      // If user not found, throw an error
-      if (user === null)
-        throw Object({ code: 400, reason: 'User does not exist' });
-
-      // Parent folder and id of the note
-      const { id, folder } = req.body;
-
-      // Remove note's id from the folder's notes list
-      await Folder.findOneAndUpdate({ id: folder }, { $pull: { notes: id } });
-
-      // Delete the note
-      return Note.deleteOne({ id });
-    })
+app.delete('/delete/:id', auth, (req, res) => {
+  Note.deleteOne({ id: req.params.id, owner: req.user.uid })
     .then(({ ok, n }) => {
-      // If any error (n != 1), throw error
+      // If any error (ok != 1), throw error
       if (ok !== 1)
         throw Object({ code: 500, reason: 'Internal server error' });
 

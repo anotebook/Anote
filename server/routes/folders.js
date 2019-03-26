@@ -72,8 +72,10 @@ app.post('/create', auth, (req, res) => {
 app.get('/get/:id', auth, (req, res) => {
   // TODO: Return folder details depending upon the acess
   Folder.find({ parentFolder: req.params.id, owner: req.user.uid })
-    .then(folder => {
-      return res.send(folder);
+    .then(folders => {
+      if (folders === null)
+        throw Object({ code: 400, reason: 'Folder not found' });
+      res.send(folders);
     })
     .catch(err => {
       res.status(500).send(err);
