@@ -6,6 +6,7 @@ import notesRoute from './routes/notes';
 import usersRoute from './routes/user';
 import xlistRoute from './routes/xlist';
 import foldersRoute from './routes/folders';
+import accessRoute from './routes/access';
 
 // Configure environment variables for server
 dotenv.config();
@@ -31,6 +32,7 @@ app.get('/', (req, res) => {
   res.send('Hello World!');
 });
 
+app.use(`${baseUrl}/access`, accessRoute);
 app.use(`${baseUrl}/notes`, notesRoute);
 app.use(`${baseUrl}/users`, usersRoute);
 app.use(`${baseUrl}/xlist`, xlistRoute);
