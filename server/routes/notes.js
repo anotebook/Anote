@@ -59,11 +59,10 @@ app.post('/create', auth, (req, res) => {
         title,
         parentFolder: folder,
         timestamp: Date.now(),
-        owner: user.uid,
-        // copy the parent folder access-list
-        xlist: resultFolder.xlist.slice()
+        owner: user.uid
       };
       note.id = hash(note);
+      note.xlist = resultFolder.xlist.slice();
       note.path = `${resultFolder.path}$${note.id}`;
 
       const newNote = new Note(note);

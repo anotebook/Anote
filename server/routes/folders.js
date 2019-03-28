@@ -41,12 +41,11 @@ app.post('/create', auth, (req, res) => {
         name: title,
         parentFolder,
         timestamp: Date.now(),
-        owner: req.user.uid,
-        // copy the parent folder access-list
-        xlist: result.xlist.slice()
+        owner: req.user.uid
       };
       // Generate unique id for the folder
       createFolder.id = hash(createFolder);
+      createFolder.xlist = result.xlist.slice();
       createFolder.path = `${result.path}\\$${createFolder.id}`;
 
       const newFolder = new Folder(createFolder);
