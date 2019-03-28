@@ -130,6 +130,8 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
       return null;
     }
 
+    xlist.members = xlist.members.filter(x => !usersList.includes(x));
+
     for (let i = 0; i < xlist.members.length; i += 1)
       usersList.push(xlist.members[i]);
 
@@ -168,10 +170,29 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
         searchResult.xlist.push(userListWithPermission[i]);
 
       const regex = new RegExp(`^${searchResult.path}`);
-      return Folder.updateMany(
-        { owner: req.user.id, path: { $regex: regex } },
-        { $set: { xlist: userListWithPermission.slice() } }
-      );
+      let foldersUpdatePromise;
+      let notesUpdatePromise;
+
+      if (req.params.type === 'folders') {
+        foldersUpdatePromise = Folder.updateMany(
+          { owner: req.user.uid, path: { $regex: regex } },
+          { $set: { xlist: searchResult.xlist.slice() } }
+        );
+        notesUpdatePromise = Notes.updateMany(
+          { owner: req.user.id, path: { $regex: regex } },
+          { $set: { xlist: searchResult.xlist.slice() } }
+        );
+      } else {
+        notesUpdatePromise = Notes.updateOne(
+          { owner: req.user.id, path: { $regex: regex } },
+          { $set: { xlist: searchResult.xlist.slice() } }
+        );
+        foldersUpdatePromise = new Promise(resolve => {
+          resolve([]);
+        });
+      }
+
+      return Promise.all([notesUpdatePromise, foldersUpdatePromise]);
     })
     .then(result => {
       if (!result) return;

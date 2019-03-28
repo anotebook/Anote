@@ -3,6 +3,7 @@ import { CardColumns, Button, Form } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FaPlus } from 'react-icons/fa';
+import PropTypes from 'prop-types';
 
 import './index.css';
 import server from '../../utils/axios';
@@ -10,6 +11,19 @@ import XlistCard from './Card';
 import VerticallyCenteredModal from './VerticallyCenteredModal';
 
 class XlistCardContainer extends React.Component {
+  static propTypes = {
+    auth: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      about: PropTypes.string,
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      picture: PropTypes.string.isRequired,
+      uid: PropTypes.string.isRequired,
+      userHandle: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    }).isRequired
+  };
+
   isUnmount = false;
 
   state = {
@@ -140,7 +154,7 @@ class XlistCardContainer extends React.Component {
               this.state.clickedCardName
             }`
           }}
-          push={true}
+          push
         />
       );
     }
