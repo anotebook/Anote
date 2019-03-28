@@ -46,7 +46,7 @@ app.post('/create', auth, (req, res) => {
       // Generate unique id for the folder
       createFolder.id = hash(createFolder);
       createFolder.xlist = result.xlist.slice();
-      createFolder.path = `${result.path}\\$${createFolder.id}`;
+      createFolder.path = `${result.path}$${createFolder.id}`;
 
       const newFolder = new Folder(createFolder);
       return newFolder.save();
@@ -84,7 +84,7 @@ app.get('/get/:id', auth, (req, res) => {
  * delete specified folder
  */
 app.delete('/delete/:id', auth, (req, res) => {
-  let regex;
+  let delRegex;
 
   Folder.findOne({ id: req.params.id })
     .then(folder => {
@@ -93,15 +93,15 @@ app.delete('/delete/:id', auth, (req, res) => {
         return null;
       }
 
-      regex = new RegExp(`${folder.path}`);
-      /* console.log(regex); */
-      return Folder.deleteMany({ path: regex });
+      delRegex = new RegExp(`^${folder.path}`.replace(/\$/g, '\\$'));
+      console.log(delRegex);
+      return Folder.deleteMany({ path: { $regex: delRegex } });
     })
     .then(deleteRes => {
       // response is already sent to the client
       if (!deleteRes) return null;
-      /* console.log(deleteRes); */
-      return Notes.deleteMany({ path: regex });
+      console.log(deleteRes);
+      return Notes.deleteMany({ path: delRegex });
     })
     .then(deleteRes => {
       if (!deleteRes) return;

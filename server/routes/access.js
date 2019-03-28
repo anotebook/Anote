@@ -169,7 +169,7 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
       for (let i = 0; i < userListWithPermission.length && action; i += 1)
         searchResult.xlist.push(userListWithPermission[i]);
 
-      const regex = new RegExp(`^${searchResult.path}`);
+      const regex = new RegExp(`^${searchResult.path}`.replace(/\$/g, '\\$'));
       let foldersUpdatePromise;
       let notesUpdatePromise;
 
@@ -179,12 +179,12 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
           { $set: { xlist: searchResult.xlist.slice() } }
         );
         notesUpdatePromise = Notes.updateMany(
-          { owner: req.user.id, path: { $regex: regex } },
+          { owner: req.user.uid, path: { $regex: regex } },
           { $set: { xlist: searchResult.xlist.slice() } }
         );
       } else {
         notesUpdatePromise = Notes.updateOne(
-          { owner: req.user.id, path: { $regex: regex } },
+          { owner: req.user.uid, path: { $regex: regex } },
           { $set: { xlist: searchResult.xlist.slice() } }
         );
         foldersUpdatePromise = new Promise(resolve => {
@@ -203,9 +203,5 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
     });
   return 0;
 });
-
-/*
- * for shared access
- */
 
 export default app;

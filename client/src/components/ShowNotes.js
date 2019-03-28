@@ -81,7 +81,7 @@ class ShowNotes extends Component {
           trigger="click"
           overlay={this.popover}
           placement="top"
-          rootClose={true}
+          rootClose
           onEnter={this.handleAddClick}
           onExit={this.handleAddClick}
         >
