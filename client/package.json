@@ -10,7 +10,7 @@
     "medium-draft": "^0.6.0-beta1",
     "prop-types": "^15.7.2",
     "react": "^16.7.0",
-    "react-bootstrap": "^1.0.0-beta.5",
+    "react-bootstrap": "^1.0.0-beta.6",
     "react-dom": "^16.7.0",
     "react-google-login": "^5.0.0",
     "react-icons": "^3.3.0",
