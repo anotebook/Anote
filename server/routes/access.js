@@ -19,26 +19,24 @@ const auth = (req, res, next) => {
       req.user = user;
       next();
     })
-    .catch(() => res.status(404).json({ error: 'authentication failed!' }));
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
 };
 
 /*
- * @route     /access/:type/:access/:id
+ * @route     /access/:type/:id
  * @acces     private
  * @descr     get all the users who has specified access to specified folder
- *
- *            'access' = 'read' for getting the read-only accessible use
- *            'access' = 'write' for read-write access
  *
  *            'type' = 'notes' for getting the notes data and
  *            'type' = 'folders' for getting the folder data
  *
  *            'id' = id of the corresponding 'type'
  */
-app.get('/:type/:access/:id', auth, (req, res) => {
-  if (req.params.access !== 'read' && req.params.access !== 'write')
-    return res.status(404).json({ error: 'Invalid end-point' });
-
+app.get('/:type/:id', auth, (req, res) => {
   if (req.params.type !== 'notes' && req.params.type !== 'folders')
     return res.status(404).json({ error: 'Invalid end-point' });
 
@@ -54,11 +52,7 @@ app.get('/:type/:access/:id', auth, (req, res) => {
           .status(400)
           .json({ error: `Requested ${req.params.type} doesn't exists` });
 
-      const type = req.params.access === 'read' ? 0 : 1;
-      const response = result.xlist
-        .filter(x => x.visibility === type)
-        .map(x => x.email);
-      return res.send(response);
+      return res.send(result.xlist);
     })
     .catch(err => {
       res.status(500).send(err);
@@ -92,7 +86,7 @@ app.get('/:type/:access/:id', auth, (req, res) => {
  * @bodyparm   email[](array of email to add) => 'mandatory field'
  *             xlist (name of the xlist you want to give access) => 'optional'
  */
-app.post('/:type/:access/:id', auth, (req, res) => {
+app.post('/:type/:access/:action/:id', auth, (req, res) => {
   if (req.params.access !== 'read' && req.params.access !== 'write')
     return res.status(404).json({ error: 'Invalid end-point' });
 

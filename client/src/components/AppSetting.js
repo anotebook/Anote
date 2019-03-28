@@ -17,7 +17,8 @@ import { changeAppSetting } from '../actions';
 class AppSetting extends React.Component {
   static propTypes = {
     fontColor: PropTypes.string.isRequired,
-    fontSize: PropTypes.number.isRequired
+    fontSize: PropTypes.number.isRequired,
+    history: PropTypes.instanceOf(Object).isRequired
   };
 
   updateSettings = () => {

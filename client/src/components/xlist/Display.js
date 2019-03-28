@@ -60,7 +60,7 @@ class XlistDisplay extends React.Component {
           });
         }
         // Internal server error
-        console.log('do something for the internal server error');
+        /* console.log('do something for the internal server error'); */
       });
   }
 
@@ -166,7 +166,7 @@ class XlistDisplay extends React.Component {
       nameChanged: true,
       editedName: changedValue
     });
-    console.log(this.state.xlist.name);
+    /* console.log(this.state.xlist.name); */
   };
 
   onEdit = () => {
@@ -297,7 +297,7 @@ class XlistDisplay extends React.Component {
         </ListGroup>
         <small ref="statusMessages" />
 
-        {/* If the page type is "others" then show the clone button else 
+        {/* If the page type is "others" then show the clone button else
             "show an add button and on click show the form to fill the info" */}
         <div className="d-flex flex-row" style={{ marginTop: 'auto' }}>
           {this.state.xlist.type === 'others' ? (
