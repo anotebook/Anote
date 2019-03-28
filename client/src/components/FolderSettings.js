@@ -27,7 +27,16 @@ class FolderSettings extends Component {
     // Email of the new user to be added
     newEmail: '',
     // Visibility for new user to be added
-    newVisibility: 0
+    newVisibility: 0,
+
+    // X-List query
+    queryXList: '',
+    // Array of x-list created by the user
+    userXList: [],
+    // Stores if x-list of the user have been created
+    xListQueried: false,
+    // Visibility for new x-list users to be added
+    newXlistVisibility: 0
   };
 
   /*
@@ -47,7 +56,7 @@ class FolderSettings extends Component {
 
   // Closes the modal for x-list
   closeXlist = () => {
-    this.setState({ xlistModal: false });
+    this.setState({ xlistModal: false, userXList: [], xListQueried: false });
   };
 
   // Removes the access of the folder from the user selected
@@ -122,11 +131,46 @@ class FolderSettings extends Component {
             return {
               xlist: prevState.xlist,
               newEmail: '',
-              visibility: 0
+              newVisibility: 0
             };
           });
         });
     }
+  };
+
+  // Handles change in xlist's query
+  handleXlistQuery = query => {
+    this.setState({ queryXList: query });
+    if (!this.state.xListQueried) {
+      axios()
+        .get('/xlist/me')
+        .then(res =>
+          this.setState({ userXList: res.data, xListQueried: true })
+        );
+    }
+  };
+
+  // Handles the visibility for the users added from x-list
+  toggleNewXlistVisibility = () => {
+    this.setState(prevState => {
+      return { newXlistVisibility: (prevState.newXlistVisibility + 1) % 2 };
+    });
+  };
+
+  // Adds the users from x-list to the access list of the folder
+  addXList = xlist => {
+    const newVisibility = this.state.newXlistVisibility;
+    axios()
+      .post(
+        `/access/folders/${newVisibility ? 'write' : 'read'}/add/${
+          this.props.folderId
+        }`,
+        { email: [], xlist }
+      )
+      .then(() => {
+        this.setState({ queryXList: '', newXlistVisibility: 0 });
+        this.closeXlist();
+      });
   };
 
   render() {
@@ -176,7 +220,7 @@ class FolderSettings extends Component {
               ))}
             </ListGroup>
             {/* New user input form */}
-            <InputGroup>
+            <InputGroup className="mt-2">
               {/* Email of new user */}
               <FormControl
                 value={this.state.newEmail}
@@ -198,6 +242,50 @@ class FolderSettings extends Component {
                 <Button onClick={this.addEmail}>Add</Button>
               </InputGroup.Append>
             </InputGroup>
+            {/* Import users from x-list */}
+            <>
+              <InputGroup className="mt-2">
+                {/* x-list's name */}
+                <FormControl
+                  value={this.state.queryXList}
+                  onChange={e => this.handleXlistQuery(e.target.value)}
+                  placeholder="X-List"
+                  aria-label="X-List"
+                />
+                {/* Visibility of new user */}
+                <InputGroup.Append>
+                  <Button
+                    onClick={this.toggleNewXlistVisibility}
+                    variant="outline-primary"
+                  >
+                    {this.state.newXlistVisibility ? (
+                      <MdEdit />
+                    ) : (
+                      <MdVisibility />
+                    )}
+                  </Button>
+                </InputGroup.Append>
+              </InputGroup>
+              {/* Show the x-list matches based on the query */}
+              <ListGroup>
+                {this.state.queryXList !== '' && // Don't show suggestions if no input
+                  this.state.userXList
+                    .filter(xlist => xlist.name.includes(this.state.queryXList))
+                    // Show only 5 results
+                    .slice(0, 5)
+                    .map(xlist => {
+                      return (
+                        <ListGroupItem
+                          key={xlist.name}
+                          action
+                          onClick={() => this.addXList(xlist.name)}
+                        >
+                          {xlist.name}
+                        </ListGroupItem>
+                      );
+                    })}
+              </ListGroup>
+            </>
           </Modal.Body>
           <Modal.Footer>
             <Button variant="outline-danger" onClick={this.closeXlist}>
