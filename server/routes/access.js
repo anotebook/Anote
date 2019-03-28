@@ -188,10 +188,6 @@ app.get('/:type/:id', auth, (req, res) => {
  *
  *            'action' = 'add' for adding the mentioned users
  *            'action' = 'remove' for removing the access from mentioned user
- *              ***************************************************************
- *              REMEMBER YOU CAN GIVE WRITE ACCESS TO USERS HAVING READ ACCESS
- *              BUT REMOVING WRITE ACCESS THEN WILL ALSO REMOVE READ ACCESS
- *              ****************************************************************
  *
  *            'id' = id of the corresponding 'type'
  *
