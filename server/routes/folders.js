@@ -21,11 +21,13 @@ const auth = (req, res, next) => {
     .catch(() => res.status(404).json({ error: 'authentication failed!' }));
 };
 
+/*
+ * @bodyparm    owner: uid (owner of the current folder)
+ */
 app.post('/create', auth, (req, res) => {
   const parentFolder = req.body.folder;
   Folder.findOne({
-    id: parentFolder,
-    owner: req.user.uid
+    id: parentFolder
   })
     .then(result => {
       if (!result) {
@@ -34,6 +36,22 @@ app.post('/create', auth, (req, res) => {
           .json({ Folder: "Requested parent folder doesn't exists" });
         return null;
       }
+      // TODO: If the below technique for get request works then remove this
+      let hasAccess = req.user.uid === result.owner ? 1 : 0;
+      for (let i = 0; i < result.xlist.length && hasAccess === 0; i += 1)
+        if (
+          result.xlist[i].email === req.user.email &&
+          result.xlist[i].visibility === 1
+        ) {
+          hasAccess = 1;
+          break;
+        }
+
+      if (hasAccess === 0) {
+        res.status(400).send("contact the owner you don't have access");
+        return null;
+      }
+
       // parentFolder exisits and we have it's reference
       const { title } = req.body;
       // Create folder using data extracted
@@ -68,11 +86,17 @@ app.post('/create', auth, (req, res) => {
  * inside a folder-id mentioned
  */
 app.get('/get/:id', auth, (req, res) => {
-  // TODO: Return folder details depending upon the acess
-  Folder.find({ parentFolder: req.params.id, owner: req.user.uid })
+  Folder.find({
+    parentFolder: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email } } }
+    ]
+  })
     .then(folders => {
       if (folders === null)
         throw Object({ code: 400, reason: 'Folder not found' });
+
       res.send(folders);
     })
     .catch(err => {
@@ -86,7 +110,13 @@ app.get('/get/:id', auth, (req, res) => {
 app.delete('/delete/:id', auth, (req, res) => {
   let delRegex;
 
-  Folder.findOne({ id: req.params.id })
+  Folder.findOne({
+    id: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.uid, visibility: 1 } } }
+    ]
+  })
     .then(folder => {
       if (!folder) {
         res.status(400).json({ folder: "Mentioned folder doesn't exists" });
@@ -94,13 +124,11 @@ app.delete('/delete/:id', auth, (req, res) => {
       }
 
       delRegex = new RegExp(`^${folder.path}`.replace(/\$/g, '\\$'));
-      console.log(delRegex);
       return Folder.deleteMany({ path: { $regex: delRegex } });
     })
     .then(deleteRes => {
       // response is already sent to the client
       if (!deleteRes) return null;
-      console.log(deleteRes);
       return Notes.deleteMany({ path: delRegex });
     })
     .then(deleteRes => {
