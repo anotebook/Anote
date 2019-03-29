@@ -20,8 +20,8 @@ const { hasCommandModifier } = KeyBindingUtil;
 
 class ViewNote extends Component {
   static propTypes = {
+    isMenuDisp: PropTypes.bool.isRequired,
     location: PropTypes.instanceOf(Object).isRequired,
-    menuDisp: PropTypes.bool.isRequired,
     user: PropTypes.shape({
       _id: PropTypes.string.isRequired,
       about: PropTypes.string,
@@ -32,8 +32,7 @@ class ViewNote extends Component {
       uid: PropTypes.string.isRequired,
       userHandle: PropTypes.string.isRequired,
       username: PropTypes.string.isRequired
-    }).isRequired,
-    widthChanged: PropTypes.number.isRequired
+    }).isRequired
   };
 
   state = {
@@ -168,7 +167,7 @@ class ViewNote extends Component {
   };
 
   render() {
-    const width = window.innerWidth - (this.props.menuDisp ? 250 : 70);
+    const width = window.innerWidth - (this.props.isMenuDisp ? 250 : 70);
 
     const visibility = this.state.visibility;
     if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
@@ -267,7 +266,7 @@ class ViewNote extends Component {
 const mapStateToProps = state => {
   return {
     user: state.user,
-    menuDisp: state.toggleMenu,
+    isMenuDisp: state.toggleMenu,
     widthChanged: state.widthChanged
   };
 };
