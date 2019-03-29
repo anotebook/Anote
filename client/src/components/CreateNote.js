@@ -11,6 +11,8 @@ class CreateNote extends Component {
   static propTypes = {
     // It stores what is being created [note/folder]
     create: PropTypes.string.isRequired,
+    history: PropTypes.instanceOf(Object).isRequired,
+    location: PropTypes.instanceOf(Object).isRequired,
     // User's root folder
     userRootFolder: PropTypes.string.isRequired
   };
