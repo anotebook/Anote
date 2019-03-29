@@ -150,6 +150,9 @@ class ViewNote extends Component {
       .get(`/notes/view/${path}`)
       .then(res => {
         this.setInitialState(res.data);
+      })
+      .catch(err => {
+        if (err.response.status === 404) this.setState({ visibility: -1 });
       });
 
     // TODO: Save the note to the database every minute automatically
