@@ -21,6 +21,7 @@ const { hasCommandModifier } = KeyBindingUtil;
 class ViewNote extends Component {
   static propTypes = {
     location: PropTypes.instanceOf(Object).isRequired,
+    menuDisp: PropTypes.bool.isRequired,
     user: PropTypes.shape({
       _id: PropTypes.string.isRequired,
       about: PropTypes.string,
@@ -31,7 +32,8 @@ class ViewNote extends Component {
       uid: PropTypes.string.isRequired,
       userHandle: PropTypes.string.isRequired,
       username: PropTypes.string.isRequired
-    }).isRequired
+    }).isRequired,
+    widthChanged: PropTypes.number.isRequired
   };
 
   state = {
@@ -166,6 +168,8 @@ class ViewNote extends Component {
   };
 
   render() {
+    const width = window.innerWidth - (this.props.menuDisp ? 250 : 70);
+
     const visibility = this.state.visibility;
     if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
     if (visibility < 0) return <h1>Access denied</h1>;
@@ -194,25 +198,27 @@ class ViewNote extends Component {
                 }
               />
               {/* Note editor */}
-              <Editor
-                ref={this.refsEditor}
-                editorState={this.state.editorState}
-                onChange={this.onEditorStateChange}
-                placeholder="Make note of..."
-                keyBindingFn={this.keyBinding}
-                handleKeyCommand={this.handleKeyCommand}
-                sideButtons={[]}
-                readOnly={
-                  typeof this.state.visibility === 'undefined' ||
-                  this.state.visibility < 1
-                }
-                editorEnabled={
-                  !(
+              <div style={{ width: `${width}px` }}>
+                <Editor
+                  ref={this.refsEditor}
+                  editorState={this.state.editorState}
+                  onChange={this.onEditorStateChange}
+                  placeholder="Make note of..."
+                  keyBindingFn={this.keyBinding}
+                  handleKeyCommand={this.handleKeyCommand}
+                  sideButtons={[]}
+                  readOnly={
                     typeof this.state.visibility === 'undefined' ||
                     this.state.visibility < 1
-                  )
-                }
-              />
+                  }
+                  editorEnabled={
+                    !(
+                      typeof this.state.visibility === 'undefined' ||
+                      this.state.visibility < 1
+                    )
+                  }
+                />
+              </div>
             </>
           )}
         </div>
@@ -221,7 +227,10 @@ class ViewNote extends Component {
           typeof this.state.visibility === 'undefined' ||
           this.state.visibility < 1
         ) && (
-          <div className="d-flex flex-column">
+          <div
+            className="d-flex flex-column"
+            style={{ position: 'fixed', right: '0', zIndex: '1000' }}
+          >
             <Button
               onClick={this.saveNote}
               style={{
@@ -257,7 +266,9 @@ class ViewNote extends Component {
 // Get the required props from the state
 const mapStateToProps = state => {
   return {
-    user: state.user
+    user: state.user,
+    menuDisp: state.toggleMenu,
+    widthChanged: state.widthChanged
   };
 };
 
