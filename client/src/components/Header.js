@@ -71,7 +71,7 @@ class Header extends React.Component {
                   <Dropdown.Item as={Link} to="/profile">
                     Profile
                   </Dropdown.Item>
-                  <Dropdown.Item as={Link} to="/settings">
+                  <Dropdown.Item as={Link} to="/settings" disabled>
                     Settings
                   </Dropdown.Item>
                 </Dropdown.Menu>

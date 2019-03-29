@@ -110,15 +110,11 @@ class App extends Component {
           <Switch>
             {/* Put all the Routes here
              and all the PrivateRoutes at the bottom */}
-
             {/* render Login Message for User */}
             <Route exact path="/" component={CardLogin} />
-
             {/* render features of the App and how to use info */}
             <Route exact path="/about" component={About} />
-
             {/* Start PrivateRoutes from here */}
-
             {/* Show notes w/ associated functions to the user */}
             <PrivateRoute
               path="/notes"
@@ -134,6 +130,8 @@ class App extends Component {
               componentProps={{ create: 'folder' }}
             />
 
+            {/*
+            // To be enabled later
             <PrivateRoute
               exact
               path="/settings/update"
@@ -141,13 +139,14 @@ class App extends Component {
               loggedIn={this.props.loggedIn}
             />
 
-            {/* render AppSettings and is valid for loggedIn User */}
+            // render AppSettings and is valid for loggedIn User
             <PrivateRoute
               exact
               path="/settings"
               component={AppSetting}
               loggedIn={this.props.loggedIn}
             />
+            * /}
 
             {/* render User Info */}
             <PrivateRoute
@@ -157,7 +156,6 @@ class App extends Component {
               componentProps={{ user: this.props.user }}
               loggedIn={this.props.loggedIn}
             />
-
             <PrivateRoute
               path="/xlist"
               component={Xlist}

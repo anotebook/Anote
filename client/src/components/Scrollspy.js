@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 
-import { FaRegStickyNote, FaRegListAlt, FaStickyNote } from 'react-icons/fa';
+import { FaRegStickyNote, FaRegListAlt } from 'react-icons/fa';
 import { MdPeopleOutline, MdHelpOutline, MdMenu } from 'react-icons/md';
 import toggleMenu from '../actions/toggleMenu';
 
@@ -80,15 +80,6 @@ class Scrollspy extends React.Component {
               <Link className="menu-item d-flex align-items-center" to="/xlist">
                 <FaRegListAlt width="50px" height="50px" />
                 {open ? <div className="menu-item-text">X-List</div> : null}
-              </Link>
-            </li>
-            <li>
-              <Link
-                className="menu-item d-flex align-items-center"
-                to="/template"
-              >
-                <FaStickyNote width="50px" height="50px" />
-                {open ? <div className="menu-item-text">Template</div> : null}
               </Link>
             </li>
             <li>
