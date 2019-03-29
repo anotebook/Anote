@@ -16,9 +16,7 @@ class DisplayNotes extends Component {
     // Type [note/grp/folder]
     type: PropTypes.string.isRequired,
     // User's root folder
-    userRootFolder: PropTypes.string.isRequired,
-    // Folder/note visibility for the user
-    visibility: PropTypes.number.isRequired
+    userRootFolder: PropTypes.string.isRequired
   };
 
   state = {

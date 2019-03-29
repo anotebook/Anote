@@ -6,7 +6,8 @@ import { Tabs, Tab, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { MdSettings } from 'react-icons/md';
 
 import DisplayNotes from './DisplayNotes';
-import FolderSettings from './FolderSettings';
+import ContentSettings from './ContentSettings';
+
 import axios from '../utils/axios';
 
 /*
@@ -106,10 +107,10 @@ class ShowNotes extends Component {
         {/* 3 Tabs for note/grp/folder */}
         <Tabs defaultActiveKey="notes">
           <Tab eventKey="notes" title="Notes">
-            <DisplayNotes type="note" visibility={visibility} />
+            <DisplayNotes type="note" />
           </Tab>
           <Tab eventKey="folders" title="Folders">
-            <DisplayNotes type="folder" visibility={visibility} />
+            <DisplayNotes type="folder" />
           </Tab>
           {/* Folder settings is available only if user is the owner */}
           {this.props.user.uid === this.state.folderMeta.owner && (
@@ -118,29 +119,34 @@ class ShowNotes extends Component {
               title={<MdSettings />}
               tabClassName="ml-auto"
             >
-              <FolderSettings
-                folderId={this.props.match.params.id || this.props.user.root}
-                visibility={visibility}
+              <ContentSettings
+                contentId={this.props.match.params.id || this.props.user.root}
+                type="folder"
               />
             </Tab>
           )}
         </Tabs>
 
-        {/* Show `+` button to add note/grp/folder */}
-        <OverlayTrigger
-          trigger="click"
-          overlay={this.popover}
-          placement="top"
-          rootClose
-          onEnter={this.handleAddClick}
-          onExit={this.handleAddClick}
-        >
-          <Button id="btn-add-note">
-            <div ref="btnAddNote" className="btn-add-note">
-              <i className="fas fa-plus" />
-            </div>
-          </Button>
-        </OverlayTrigger>
+        {/* Show `+` button to add note/folder only if
+         * user is owner or user has write access
+         */}
+        {(this.props.user.uid === this.state.folderMeta.owner ||
+          this.state.folderMeta.visibility >= 1) && (
+          <OverlayTrigger
+            trigger="click"
+            overlay={this.popover}
+            placement="top"
+            rootClose
+            onEnter={this.handleAddClick}
+            onExit={this.handleAddClick}
+          >
+            <Button id="btn-add-note">
+              <div ref="btnAddNote" className="btn-add-note">
+                <i className="fas fa-plus" />
+              </div>
+            </Button>
+          </OverlayTrigger>
+        )}
       </div>
     );
   }
