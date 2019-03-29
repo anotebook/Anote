@@ -14,14 +14,16 @@ import axios from '../utils/axios';
 
 class FolderSettings extends Component {
   static propTypes = {
-    // Id of the folder whose settings should be opened
-    folderId: PropTypes.string.isRequired
+    // Id of the content whose settings should be opened
+    contentId: PropTypes.string.isRequired,
+    // Store whose settings is to be update [folder/note]
+    type: PropTypes.string.isRequired
   };
 
   state = {
     // Specifies if the x-list modal should be displayed
     xlistModal: false,
-    // x-list for the folder
+    // x-list for the content
     xlist: [],
 
     // Email of the new user to be added
@@ -42,12 +44,12 @@ class FolderSettings extends Component {
   /*
    * Opens the modal displaying the xlist
    *
-   * Makes the modal open and queries the access list of the folder
+   * Makes the modal open and queries the access list of the contents
    */
   openXlist = () => {
     this.setState({ xlistModal: true });
     axios()
-      .get(`/access/folders/${this.props.folderId}`)
+      .get(`/access/${this.props.type}s/${this.props.contentId}`)
       .then(res => {
         /* console.log(res.data); */
         this.setState({ xlist: res.data });
@@ -59,12 +61,15 @@ class FolderSettings extends Component {
     this.setState({ xlistModal: false, userXList: [], xListQueried: false });
   };
 
-  // Removes the access of the folder from the user selected
+  // Removes the access of the content from the user selected
   removeAccess = index => {
     axios()
-      .post(`/access/folders/write/remove/${this.props.folderId}`, {
-        email: [this.state.xlist[index].email]
-      })
+      .post(
+        `/access/${this.props.type}s/write/remove/${this.props.contentId}`,
+        {
+          email: [this.state.xlist[index].email]
+        }
+      )
       .then(() => {
         // On successful removel, update the UI
         this.setState(prevState => {
@@ -79,8 +84,8 @@ class FolderSettings extends Component {
     const visibility = (this.state.xlist[index].visibility + 1) % 2;
     axios()
       .post(
-        `/access/folders/${visibility ? 'write' : 'read'}/add/${
-          this.props.folderId
+        `/access/${this.props.type}s/${visibility ? 'write' : 'read'}/add/${
+          this.props.contentId
         }`,
         { email: [this.state.xlist[index].email] }
       )
@@ -93,19 +98,19 @@ class FolderSettings extends Component {
       });
   };
 
-  // Handle email change of new user being added to the folder's x-list
+  // Handle email change of new user being added to the content's x-list
   handleNewEmail = email => {
     this.setState({ newEmail: email });
   };
 
-  // Handle visibilty change for new user being added to the folder's x-list
+  // Handle visibilty change for new user being added to the content's x-list
   toggleNewVisibility = () => {
     this.setState(prevState => {
       return { newVisibility: (prevState.newVisibility + 1) % 2 };
     });
   };
 
-  // Handle add request of the new user to folder's x-list
+  // Handle add request of the new user to content's x-list
   addEmail = () => {
     const newVisibility = this.state.newVisibility;
     const newEmail = this.state.newEmail;
@@ -116,9 +121,9 @@ class FolderSettings extends Component {
     if (isEmailValid) {
       axios()
         .post(
-          `/access/folders/${newVisibility ? 'write' : 'read'}/add/${
-            this.props.folderId
-          }`,
+          `/access/${this.props.type}s/${
+            newVisibility ? 'write' : 'read'
+          }/add/${this.props.contentId}`,
           { email: [newEmail] }
         )
         .then(() => {
@@ -157,13 +162,13 @@ class FolderSettings extends Component {
     });
   };
 
-  // Adds the users from x-list to the access list of the folder
+  // Adds the users from x-list to the access list of the content
   addXList = xlist => {
     const newVisibility = this.state.newXlistVisibility;
     axios()
       .post(
-        `/access/folders/${newVisibility ? 'write' : 'read'}/add/${
-          this.props.folderId
+        `/access/${this.props.type}s/${newVisibility ? 'write' : 'read'}/add/${
+          this.props.contentId
         }`,
         { email: [], xlist }
       )
@@ -176,7 +181,7 @@ class FolderSettings extends Component {
   render() {
     return (
       <>
-        {/* Settings option for the folder */}
+        {/* Settings option for the content */}
         <ListGroup>
           <ListGroupItem action onClick={this.openXlist}>
             X-List
