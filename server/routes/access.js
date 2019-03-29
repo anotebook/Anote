@@ -27,6 +27,118 @@ const auth = (req, res, next) => {
 };
 
 /*
+ * @route   /access/shared/with-me/:type
+ * @access  private
+ * @descrp  get all the folders and notes shared by current user
+ *          parameters :
+ *            type = 'read' => to get read-only folders and notes
+ *            type = 'write' => to get the read-write folders and notes
+ *
+ * return   A json object
+ *          {
+ *            notes: [] => array of notes shared with me
+ *            folders: [] => array of folders shared with me
+ *          }
+ */
+app.get('/shared/with-me/:type', auth, (req, res) => {
+  if (req.params.type !== 'read' && req.params.type !== 'write')
+    return res.status(404).json({ error: 'Invalid end-point' });
+
+  const type = req.params.type === 'read' ? 0 : 1;
+
+  const folderPromise = Folder.find({
+    $query: {
+      xlist: { $elemMatch: { visibility: type, email: req.user.email } }
+    },
+    $orderby: { path: 1 }
+  });
+  const notesPromise = Notes.find({
+    $query: {
+      xlist: { $elemMatch: { visibility: type, email: req.user.email } }
+    },
+    $orderby: { path: 1 }
+  });
+
+  Promise.all([folderPromise, notesPromise])
+    .then(([folders, notes]) => {
+      const n = folders.length;
+      let result = [];
+      let prvString = '';
+      for (let i = 0; i < n; i += 1) {
+        if (i === 0) {
+          prvString = folders[i].path;
+          result.push(folders[i]);
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        const currString = folders[i].path;
+        if (currString.length <= prvString.length) {
+          prvString = currString;
+          result.push(folders[i]);
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+        let prefix = 1;
+        for (let j = 0; j < prvString.length; j += 1) {
+          if (prvString[j] !== currString[j]) {
+            prefix = 0;
+            break;
+          }
+        }
+        if (prefix === 0) {
+          result.push(folders[i]);
+          prvString = currString;
+          // eslint-disable-next-line no-continue
+          continue;
+        }
+
+        let nestingLevel = 0;
+        for (let j = prvString.length; j < currString.length; j += 1)
+          if (currString[j] === '$') {
+            nestingLevel += 1;
+            if (nestingLevel > 1) break;
+          }
+        if (nestingLevel > 1) result.push(folders[i]);
+
+        prvString = currString;
+      }
+
+      for (let i = 0; i < result.length; i += 1) console.log(result[i]);
+
+      const folderPaths = folders.map(x => x.path);
+      // filter the notes result from those which can
+      // be accessed through folders
+      notes = notes.filter(x => !folderPaths.includes(x.path));
+
+      result = result.map(x => {
+        return {
+          name: x.name,
+          owner: x.owner,
+          parentFolder: x.parentFolder,
+          timestamp: x.timestamp,
+          id: x.id
+        };
+      });
+
+      notes = notes.map(x => {
+        return {
+          name: x.title,
+          owner: x.owner,
+          id: x.id,
+          timestamp: x.timestamp
+        };
+      });
+
+      res.json({
+        notes,
+        result
+      });
+    })
+    .catch(err => res.status(500).send(err));
+  return 0;
+});
+
+/*
  * @route     /access/:type/:id
  * @acces     private
  * @descr     get all the users who has specified access to specified folder

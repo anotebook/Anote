@@ -21,6 +21,9 @@ const auth = (req, res, next) => {
     .catch(() => res.status(404).json({ error: 'authentication failed!' }));
 };
 
+/*
+ * @bodyparm    owner: uid (owner of the current folder)
+ */
 app.post('/create', auth, (req, res) => {
   const parentFolder = req.body.folder;
   Folder.findOne({
@@ -37,6 +40,7 @@ app.post('/create', auth, (req, res) => {
           .json({ Folder: "Requested parent folder doesn't exists" });
         return null;
       }
+
       // parentFolder exisits and we have it's reference
       const { title } = req.body;
       // Create folder using data extracted
@@ -118,7 +122,6 @@ app.get('/meta/:id', auth, (req, res) => {
  * inside a folder-id mentioned
  */
 app.get('/get/:id', auth, (req, res) => {
-  // TODO: Return folder details depending upon the acess
   Folder.find({
     parentFolder: req.params.id,
     $or: [
@@ -129,6 +132,7 @@ app.get('/get/:id', auth, (req, res) => {
     .then(folders => {
       if (folders === null)
         throw Object({ code: 400, reason: 'Folder not found' });
+
       res.send(folders);
     })
     .catch(err => {
@@ -162,7 +166,6 @@ app.delete('/delete/:id', auth, (req, res) => {
     .then(deleteRes => {
       // response is already sent to the client
       if (!deleteRes) return null;
-      /* console.log(deleteRes); */
       return Notes.deleteMany({ path: delRegex });
     })
     .then(deleteRes => {
