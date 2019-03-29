@@ -1,11 +1,16 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import PropTypes from 'prop-types';
 import { convertToRaw, KeyBindingUtil } from 'draft-js';
 import { Editor, createEditorState, keyBindingFn } from 'medium-draft';
 import mediumDraftImporter from 'medium-draft/lib/importer';
 import mediumDraftExporter from 'medium-draft/lib/exporter';
 import { Button } from 'react-bootstrap';
 import { FaRegSave } from 'react-icons/fa';
+import { MdSettings } from 'react-icons/md';
+
+import ContentSettings from './ContentSettings';
 
 import axios from '../utils/axios';
 
@@ -14,9 +19,27 @@ import 'medium-draft/lib/index.css';
 const { hasCommandModifier } = KeyBindingUtil;
 
 class ViewNote extends Component {
+  static propTypes = {
+    location: PropTypes.instanceOf(Object).isRequired,
+    user: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      about: PropTypes.string,
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      picture: PropTypes.string.isRequired,
+      root: PropTypes.string.isRequired,
+      uid: PropTypes.string.isRequired,
+      userHandle: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    }).isRequired
+  };
+
   state = {
     editorState: createEditorState(),
-    title: ''
+    title: '',
+    note: {},
+    visibility: undefined,
+    isSettingsOpen: false
   };
 
   refsEditor = React.createRef();
@@ -73,7 +96,10 @@ class ViewNote extends Component {
       note,
       editorState: createEditorState(
         convertToRaw(mediumDraftImporter(note.content || ''))
-      )
+      ),
+      // If user is owner, visibility is 2 else get visibility from access list
+      visibility:
+        this.props.user.uid === note.owner ? 2 : note.xlist[0].visibility
     });
     // Set the focus
     this.refsEditor.current.focus();
@@ -116,19 +142,6 @@ class ViewNote extends Component {
    * 4. Update the editor state after load
    */
   componentDidMount = () => {
-    // Set the focus
-    this.refsEditor.current.focus();
-
-    // Try to get the note from route state
-    let note = this.props.location.state
-      ? this.props.location.state.note
-      : null;
-    /* // If availble, set the editor state and return
-    if (note) {
-      this.setInitialState(note);
-      return;
-    } */
-    /* If not, request the server */
     // Get the note id
     let path = this.props.location.pathname;
     path = path.substr(path.lastIndexOf('/') + 1);
@@ -136,52 +149,113 @@ class ViewNote extends Component {
     axios()
       .get(`/notes/view/${path}`)
       .then(res => {
-        note = res.data;
-        this.setInitialState(note);
+        this.setInitialState(res.data);
       });
 
     // TODO: Save the note to the database every minute automatically
   };
 
+  // Updates note settings to be opened or closed
+  openNoteSettings = () => {
+    this.setState(prevState => {
+      return { isSettingsOpen: !prevState.isSettingsOpen };
+    });
+  };
+
   render() {
+    const visibility = this.state.visibility;
+    if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
+    if (visibility < 0) return <h1>Access denied</h1>;
     return (
-      <div style={{ position: 'relative' }}>
-        {/* Note title */}
-        <input
-          value={this.state.title}
-          onChange={e => this.handleTitleChange(e.target.value)}
-          style={{
-            outline: 'none',
-            border: 'none',
-            padding: '8px',
-            fontSize: '1.75em'
-          }}
-        />
-        {/* Note editor */}
-        <Editor
-          ref={this.refsEditor}
-          editorState={this.state.editorState}
-          onChange={this.onEditorStateChange}
-          placeholder="Make note of..."
-          keyBindingFn={this.keyBinding}
-          handleKeyCommand={this.handleKeyCommand}
-        />
-        <Button
-          onClick={this.saveNote}
-          style={{
-            width: '40px',
-            height: '40px',
-            borderRadius: '20px',
-            position: 'absolute',
-            top: '8px',
-            right: '8px'
-          }}
-        >
-          <FaRegSave />
-        </Button>
+      <div className="d-flex">
+        <div className="flex-grow-1">
+          {this.state.isSettingsOpen && (
+            <ContentSettings contentId={this.state.note.id} type="note" />
+          )}
+          {!this.state.isSettingsOpen && (
+            <>
+              {/* Note title */}
+              <input
+                value={this.state.title}
+                onChange={e => this.handleTitleChange(e.target.value)}
+                style={{
+                  outline: 'none',
+                  border: 'none',
+                  padding: '8px',
+                  fontSize: '1.75em',
+                  width: '100%'
+                }}
+                disabled={
+                  typeof this.state.visibility === 'undefined' ||
+                  this.state.visibility < 1
+                }
+              />
+              {/* Note editor */}
+              <Editor
+                ref={this.refsEditor}
+                editorState={this.state.editorState}
+                onChange={this.onEditorStateChange}
+                placeholder="Make note of..."
+                keyBindingFn={this.keyBinding}
+                handleKeyCommand={this.handleKeyCommand}
+                sideButtons={[]}
+                readOnly={
+                  typeof this.state.visibility === 'undefined' ||
+                  this.state.visibility < 1
+                }
+                editorEnabled={
+                  !(
+                    typeof this.state.visibility === 'undefined' ||
+                    this.state.visibility < 1
+                  )
+                }
+              />
+            </>
+          )}
+        </div>
+        {/* Save option should be available iff user has edit access */}
+        {!(
+          typeof this.state.visibility === 'undefined' ||
+          this.state.visibility < 1
+        ) && (
+          <div className="d-flex flex-column">
+            <Button
+              onClick={this.saveNote}
+              style={{
+                width: '40px',
+                height: '40px',
+                borderRadius: '20px',
+                margin: '8px'
+              }}
+            >
+              <FaRegSave />
+            </Button>
+            {/* Settings should be accessible only is user is the owner */}
+            {this.props.user.uid === this.state.note.owner && (
+              <Button
+                onClick={this.openNoteSettings}
+                style={{
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '20px',
+                  margin: '8px'
+                }}
+              >
+                <MdSettings />
+              </Button>
+            )}
+          </div>
+        )}
       </div>
     );
   }
 }
 
-export default withRouter(ViewNote);
+// Get the required props from the state
+const mapStateToProps = state => {
+  return {
+    user: state.user
+  };
+};
+
+export default withRouter(connect(mapStateToProps)(ViewNote));

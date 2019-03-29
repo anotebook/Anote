@@ -27,7 +27,7 @@ class NoteContainer extends Component {
         <Route
           exact
           path="/folders/open/:id([\d|a-f]{40})"
-          sensitive={true}
+          sensitive
           component={ShowNotes}
         />
       </>

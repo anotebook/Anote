@@ -6,7 +6,9 @@ import { Tabs, Tab, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { MdSettings } from 'react-icons/md';
 
 import DisplayNotes from './DisplayNotes';
-import FolderSettings from './FolderSettings';
+import ContentSettings from './ContentSettings';
+
+import axios from '../utils/axios';
 
 /*
  * This component shows the notes/grp/folder owned by the user
@@ -15,7 +17,22 @@ class ShowNotes extends Component {
   static propTypes = {
     history: PropTypes.instanceOf(Object).isRequired,
     match: PropTypes.instanceOf(Object).isRequired,
-    userRootFolder: PropTypes.string.isRequired
+    user: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      about: PropTypes.string,
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      picture: PropTypes.string.isRequired,
+      root: PropTypes.string.isRequired,
+      uid: PropTypes.string.isRequired,
+      userHandle: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    }).isRequired
+  };
+
+  state = {
+    // Meta data for the folder opened
+    folderMeta: {}
   };
 
   // Popover to show what to create - note/grp/folder
@@ -37,6 +54,33 @@ class ShowNotes extends Component {
     </Popover>
   );
 
+  /*
+   * Get the meta data of the folder
+   *
+   * If successful, show the folder and its content according to visibility
+   * Else, deny access
+   */
+  getFolderMeta = () => {
+    axios()
+      .get(
+        `/folders/meta/${this.props.match.params.id || this.props.user.root}`
+      )
+      .then(res => this.setState({ folderMeta: res.data }))
+      .catch(() => this.setState({ folderMeta: { visibility: -1 } }));
+  };
+
+  // When component mounts, get the meta-data of the folder
+  componentDidMount = () => {
+    this.getFolderMeta();
+  };
+
+  // When component updates get meta-data iff folder changes
+  componentDidUpdate = prevProps => {
+    // If folder id changes, update the meta-data
+    if (prevProps.match.params.id !== this.props.match.params.id)
+      this.getFolderMeta();
+  };
+
   // Add button click is handled here
   handleAddClick = () => {
     this.refs.btnAddNote.classList.toggle('btn-add-note--opened');
@@ -55,6 +99,9 @@ class ShowNotes extends Component {
   };
 
   render() {
+    const visibility = this.state.folderMeta.visibility;
+    if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
+    if (visibility < 0) return <h1>Access denied</h1>;
     return (
       <div className="d-flex flex-column h-100">
         {/* 3 Tabs for note/grp/folder */}
@@ -65,32 +112,41 @@ class ShowNotes extends Component {
           <Tab eventKey="folders" title="Folders">
             <DisplayNotes type="folder" />
           </Tab>
-          <Tab
-            eventKey="settings"
-            title={<MdSettings />}
-            tabClassName="ml-auto"
-          >
-            <FolderSettings
-              folderId={this.props.match.params.id || this.props.userRootFolder}
-            />
-          </Tab>
+          {/* Folder settings is available only if user is the owner */}
+          {this.props.user.uid === this.state.folderMeta.owner && (
+            <Tab
+              eventKey="settings"
+              title={<MdSettings />}
+              tabClassName="ml-auto"
+            >
+              <ContentSettings
+                contentId={this.props.match.params.id || this.props.user.root}
+                type="folder"
+              />
+            </Tab>
+          )}
         </Tabs>
 
-        {/* Show `+` button to add note/grp/folder */}
-        <OverlayTrigger
-          trigger="click"
-          overlay={this.popover}
-          placement="top"
-          rootClose
-          onEnter={this.handleAddClick}
-          onExit={this.handleAddClick}
-        >
-          <Button id="btn-add-note">
-            <div ref="btnAddNote" className="btn-add-note">
-              <i className="fas fa-plus" />
-            </div>
-          </Button>
-        </OverlayTrigger>
+        {/* Show `+` button to add note/folder only if
+         * user is owner or user has write access
+         */}
+        {(this.props.user.uid === this.state.folderMeta.owner ||
+          this.state.folderMeta.visibility >= 1) && (
+          <OverlayTrigger
+            trigger="click"
+            overlay={this.popover}
+            placement="top"
+            rootClose
+            onEnter={this.handleAddClick}
+            onExit={this.handleAddClick}
+          >
+            <Button id="btn-add-note">
+              <div ref="btnAddNote" className="btn-add-note">
+                <i className="fas fa-plus" />
+              </div>
+            </Button>
+          </OverlayTrigger>
+        )}
       </div>
     );
   }
@@ -99,7 +155,7 @@ class ShowNotes extends Component {
 // Get the required props from the state
 const mapStateToProps = state => {
   return {
-    userRootFolder: state.user.root
+    user: state.user
   };
 };
 
