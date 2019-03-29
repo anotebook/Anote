@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import toggleMenu from './toggleMenu';
-import cardsToDisplayToggle from './cardToDisplayToggle';
+import widthChanged from './widthChanged';
 
 /* Reducers */
 
@@ -53,5 +53,5 @@ export default combineReducers({
   user: changeUserData,
   setting: changeAppSetting,
   toggleMenu,
-  initialCardsToDisplay: cardsToDisplayToggle
+  widthChanged
 });

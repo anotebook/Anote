@@ -13,7 +13,7 @@ import NoteContainer from './NoteContainer';
 import SettingForm from './SettingForm';
 import Xlist from './xlist';
 
-import toggleMenu from '../actions/toggleMenu';
+import toggleMenu, { widthChanged } from '../actions/toggleMenu';
 
 import '../App.css';
 
@@ -53,7 +53,8 @@ class App extends Component {
   static propTypes = {
     loggedIn: PropTypes.bool,
     menuDisp: PropTypes.bool,
-    toggleMenu: PropTypes.func.isRequired
+    toggleMenu: PropTypes.func.isRequired,
+    widthChanged: PropTypes.func.isRequired
   };
 
   componentDidMount() {
@@ -72,6 +73,7 @@ class App extends Component {
 
   eventListenerAction = () => {
     const body = document.querySelector('body');
+    this.props.widthChanged();
 
     if (window.innerWidth < 800 && this.props.menuDisp === true)
       this.props.toggleMenu();
@@ -188,6 +190,6 @@ export default withRouter(
   connect(
     /* State */
     mapStateToProps,
-    { toggleMenu }
+    { toggleMenu, widthChanged }
   )(App)
 );

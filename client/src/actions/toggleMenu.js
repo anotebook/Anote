@@ -1,9 +1,13 @@
-import { MENU_TOGGLE } from './types';
+import { MENU_TOGGLE, WIDTH_CHANGED } from './types';
 
-const toggleMenu = () => {
+export default () => {
   return {
     type: MENU_TOGGLE
   };
 };
 
-export default toggleMenu;
+export const widthChanged = () => {
+  return {
+    type: WIDTH_CHANGED
+  };
+};
