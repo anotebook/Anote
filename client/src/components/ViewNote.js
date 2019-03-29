@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import { convertToRaw, KeyBindingUtil } from 'draft-js';
 import { Editor, createEditorState, keyBindingFn } from 'medium-draft';
 import mediumDraftImporter from 'medium-draft/lib/importer';
@@ -14,9 +15,14 @@ import 'medium-draft/lib/index.css';
 const { hasCommandModifier } = KeyBindingUtil;
 
 class ViewNote extends Component {
+  static propTypes = {
+    location: PropTypes.instanceOf(Object).isRequired
+  };
+
   state = {
     editorState: createEditorState(),
-    title: ''
+    title: '',
+    visibility: undefined
   };
 
   refsEditor = React.createRef();
@@ -73,7 +79,8 @@ class ViewNote extends Component {
       note,
       editorState: createEditorState(
         convertToRaw(mediumDraftImporter(note.content || ''))
-      )
+      ),
+      visibility: note.xlist[0].visibility
     });
     // Set the focus
     this.refsEditor.current.focus();
@@ -116,19 +123,6 @@ class ViewNote extends Component {
    * 4. Update the editor state after load
    */
   componentDidMount = () => {
-    // Set the focus
-    this.refsEditor.current.focus();
-
-    // Try to get the note from route state
-    let note = this.props.location.state
-      ? this.props.location.state.note
-      : null;
-    /* // If availble, set the editor state and return
-    if (note) {
-      this.setInitialState(note);
-      return;
-    } */
-    /* If not, request the server */
     // Get the note id
     let path = this.props.location.pathname;
     path = path.substr(path.lastIndexOf('/') + 1);
@@ -136,14 +130,16 @@ class ViewNote extends Component {
     axios()
       .get(`/notes/view/${path}`)
       .then(res => {
-        note = res.data;
-        this.setInitialState(note);
+        this.setInitialState(res.data);
       });
 
     // TODO: Save the note to the database every minute automatically
   };
 
   render() {
+    const visibility = this.state.visibility;
+    if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
+    if (visibility < 0) return <h1>Access denied</h1>;
     return (
       <div style={{ position: 'relative' }}>
         {/* Note title */}
@@ -154,8 +150,13 @@ class ViewNote extends Component {
             outline: 'none',
             border: 'none',
             padding: '8px',
-            fontSize: '1.75em'
+            fontSize: '1.75em',
+            width: '100%'
           }}
+          disabled={
+            typeof this.state.visibility === 'undefined' ||
+            this.state.visibility !== 1
+          }
         />
         {/* Note editor */}
         <Editor
@@ -165,6 +166,17 @@ class ViewNote extends Component {
           placeholder="Make note of..."
           keyBindingFn={this.keyBinding}
           handleKeyCommand={this.handleKeyCommand}
+          sideButtons={[]}
+          readOnly={
+            typeof this.state.visibility === 'undefined' ||
+            this.state.visibility !== 1
+          }
+          editorEnabled={
+            !(
+              typeof this.state.visibility === 'undefined' ||
+              this.state.visibility !== 1
+            )
+          }
         />
         <Button
           onClick={this.saveNote}

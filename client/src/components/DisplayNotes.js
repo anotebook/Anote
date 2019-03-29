@@ -11,10 +11,14 @@ import axios from '../utils/axios';
 // This component displays the notes inside the notes container
 class DisplayNotes extends Component {
   static propTypes = {
+    history: PropTypes.instanceOf(Object).isRequired,
+    match: PropTypes.instanceOf(Object).isRequired,
     // Type [note/grp/folder]
     type: PropTypes.string.isRequired,
     // User's root folder
-    userRootFolder: PropTypes.string.isRequired
+    userRootFolder: PropTypes.string.isRequired,
+    // Folder/note visibility for the user
+    visibility: PropTypes.number.isRequired
   };
 
   state = {
@@ -93,9 +97,7 @@ class DisplayNotes extends Component {
         case 'DIV': {
           const item = this.state.contentArray[parseInt(clicked.id, 10)];
           // Route to opening the note
-          this.props.history.push(`/${this.props.type}s/open/${item.id}`, {
-            item
-          });
+          this.props.history.push(`/${this.props.type}s/open/${item.id}`);
           break;
         }
         // If the button is clicked, delete the button

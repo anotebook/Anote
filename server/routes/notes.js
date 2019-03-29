@@ -44,7 +44,16 @@ app.post('/create', auth, (req, res) => {
   const { title, folder } = req.body;
 
   // Get the folder in which the note has to be created
-  Folder.findOne({ id: folder, owner: user.uid }, 'xlist path')
+  Folder.findOne(
+    {
+      id: folder,
+      $or: [
+        { owner: user.uid },
+        { xlist: { $elemMatch: { email: req.user.email, visibility: 1 } } }
+      ]
+    },
+    'xlist path owner'
+  )
     .then(resultFolder => {
       // If folder doesn't exists, return
       if (resultFolder === null)
@@ -54,12 +63,11 @@ app.post('/create', auth, (req, res) => {
         });
 
       /* Create the note and save to db */
-
       const note = {
         title,
         parentFolder: folder,
         timestamp: Date.now(),
-        owner: user.uid
+        owner: resultFolder.owner
       };
       note.id = hash(note);
       note.xlist = resultFolder.xlist.slice();
@@ -85,7 +93,13 @@ app.post('/create', auth, (req, res) => {
  */
 app.get('/get/:id', auth, (req, res) => {
   // TODO: Return folder details depending upon the acess
-  Note.find({ parentFolder: req.params.id, owner: req.user.uid })
+  Note.find({
+    parentFolder: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email } } }
+    ]
+  })
     .then(notes => {
       if (notes === null) throw Object({ code: 404, reason: 'Note not found' });
       res.status(200).json(notes);
@@ -106,9 +120,29 @@ app.get('/get/:id', auth, (req, res) => {
  */
 app.get('/view/:id', auth, (req, res) => {
   // TODO: Return folder details depending upon the acess
-  Note.findOne({ id: req.params.id, owner: req.user.uid })
+  Note.findOne(
+    {
+      id: req.params.id,
+      $or: [
+        { owner: req.user.uid },
+        { xlist: { $elemMatch: { email: req.user.email } } }
+      ]
+    },
+    {
+      _id: 0,
+      id: 1,
+      title: 1,
+      timestamp: 1,
+      owner: 1,
+      content: 1,
+      parentFolder: 1,
+      path: 1,
+      xlist: { $elemMatch: { email: req.user.email } }
+    }
+  )
     .then(note => {
       if (note === null) throw Object({ code: 404, reason: 'Note not found' });
+      /* console.log(note); */
       res.status(200).json(note);
     })
     .catch(err => {
@@ -132,7 +166,13 @@ app.put('/update', auth, (req, res) => {
   // Get the id, title and content of the new note to update
   const { id, title, content } = req.body;
   Note.findOneAndUpdate(
-    { id, owner: req.user.uid },
+    {
+      id,
+      $or: [
+        { owner: req.user.uid },
+        { xlist: { $elemMatch: { email: req.user.email, visibility: 1 } } }
+      ]
+    },
     { $set: { title, content } }
   )
     .then(oldNote => res.status(200).json({ prev: oldNote }))
@@ -151,7 +191,13 @@ app.put('/update', auth, (req, res) => {
  * @return: A JSON object specifying number of notes deleted(should be 1)
  */
 app.delete('/delete/:id', auth, (req, res) => {
-  Note.deleteOne({ id: req.params.id, owner: req.user.uid })
+  Note.deleteOne({
+    id: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email, visibility: 1 } } }
+    ]
+  })
     .then(({ ok, n }) => {
       // If any error (ok != 1), throw error
       if (ok !== 1)

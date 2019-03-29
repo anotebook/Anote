@@ -25,7 +25,10 @@ app.post('/create', auth, (req, res) => {
   const parentFolder = req.body.folder;
   Folder.findOne({
     id: parentFolder,
-    owner: req.user.uid
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email, visibility: 1 } } }
+    ]
   })
     .then(result => {
       if (!result) {
@@ -41,7 +44,7 @@ app.post('/create', auth, (req, res) => {
         name: title,
         parentFolder,
         timestamp: Date.now(),
-        owner: req.user.uid
+        owner: result.owner
       };
       // Generate unique id for the folder
       createFolder.id = hash(createFolder);
@@ -64,12 +67,65 @@ app.post('/create', auth, (req, res) => {
 });
 
 /*
+ * @desc: Returns the meta data about the given folder
+ * @route: GET /folders/meta/:id
+ * @route-params:
+ *  id: Id of the folder whose meta-data is to be fetched
+ * @return: The id, name, owner of the folder
+ *          along with the visibility for the requested user.
+ *          If user doesn't have access, it rejects the request
+ */
+app.get('/meta/:id', auth, (req, res) => {
+  Folder.findOne(
+    {
+      id: req.params.id,
+      $or: [{ owner: req.user.uid }, { 'xlist.email': req.user.email }]
+    },
+    {
+      _id: 0,
+      id: 1,
+      name: 1,
+      owner: 1,
+      // Get just the user's visibility who requested
+      xlist: { $elemMatch: { email: req.user.email } }
+    }
+  )
+    .then(result => {
+      // Folder not found => access is denied for the user
+      if (result === null) throw Object({ code: 401, reason: 'Access denied' });
+
+      /* console.log(result); */
+      const response = {
+        id: result.id,
+        name: result.owner,
+        owner: result.owner,
+        // If user id owner or has write access => 1, else 0
+        visibility:
+          req.user.uid === result.owner ? 1 : result.xlist[0].visibility
+      };
+      res.status(200).json(response);
+    })
+    .catch(err => {
+      /* console.log(err); */
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
+});
+
+/*
  * Returns the folders(or notes) owned by the requesting user
  * inside a folder-id mentioned
  */
 app.get('/get/:id', auth, (req, res) => {
   // TODO: Return folder details depending upon the acess
-  Folder.find({ parentFolder: req.params.id, owner: req.user.uid })
+  Folder.find({
+    parentFolder: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email } } }
+    ]
+  })
     .then(folders => {
       if (folders === null)
         throw Object({ code: 400, reason: 'Folder not found' });
@@ -86,7 +142,13 @@ app.get('/get/:id', auth, (req, res) => {
 app.delete('/delete/:id', auth, (req, res) => {
   let delRegex;
 
-  Folder.findOne({ id: req.params.id })
+  Folder.findOne({
+    id: req.params.id,
+    $or: [
+      { owner: req.user.uid },
+      { xlist: { $elemMatch: { email: req.user.email, visibility: 1 } } }
+    ]
+  })
     .then(folder => {
       if (!folder) {
         res.status(400).json({ folder: "Mentioned folder doesn't exists" });
@@ -94,13 +156,13 @@ app.delete('/delete/:id', auth, (req, res) => {
       }
 
       delRegex = new RegExp(`^${folder.path}`.replace(/\$/g, '\\$'));
-      console.log(delRegex);
+      /* console.log(delRegex); */
       return Folder.deleteMany({ path: { $regex: delRegex } });
     })
     .then(deleteRes => {
       // response is already sent to the client
       if (!deleteRes) return null;
-      console.log(deleteRes);
+      /* console.log(deleteRes); */
       return Notes.deleteMany({ path: delRegex });
     })
     .then(deleteRes => {
