@@ -63,11 +63,10 @@ app.post('/create', (req, res) => {
           res.status(500).json({ reason: 'Internal error' });
         });
     })
-    .catch((/* err */) => {
-      // Verification failed
-      res.status(400).json({
-        reason: 'Authentication failed!'
-      });
+    .catch(err => {
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
     });
 });
 
