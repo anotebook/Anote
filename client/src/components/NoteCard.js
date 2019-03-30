@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 
+import getTimeDiff from '../utils/getTimeDifference';
+
 // Custom card to display a note/template
 class NoteCard extends Component {
   static propTypes = {
@@ -20,7 +22,7 @@ class NoteCard extends Component {
   };
 
   render() {
-    // TODO: Update card design acc to the type(note/grp/folder)
+    // TODO: Update card design acc to the type(note/folder)
     return (
       <Card id={this.props.id} style={{ cursor: 'pointer' }}>
         <Card.Body className="d-flex flex-column">
@@ -34,7 +36,7 @@ class NoteCard extends Component {
           </Button>
         </Card.Body>
         <Card.Footer className="text-right text-muted">
-          {this.props.updated}
+          {getTimeDiff(this.props.updated)}
         </Card.Footer>
       </Card>
     );

@@ -5,7 +5,7 @@ import GoogleAuth from './GoogleAuth';
 /* this component shows the login message for the User */
 const CardLogin = () => {
   return (
-    <Card id="login-card" style={{ width: '30%' }}>
+    <Card id="login-card">
       <Card.Body
         style={{
           display: 'flex',

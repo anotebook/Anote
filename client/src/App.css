@@ -1,38 +1,3 @@
-/* Extension to bootstrap styles
- * Don't write any other specific styles in this section
- */
-
-/* TODO: Add media queries to center card */
-@media screen and (min-width: 576px) {
-  .w-sm-75 {
-    width: 75% !important;
-  }
-}
-
-/* responsive styling for different width */
-
-@media screen and (max-width: 575px) {
-  #FaUserIcon {
-    display: none;
-    visibility: hidden;
-  }
-}
-
-@media screen and (max-width: 750px) {
-  html {
-    font-size: 0.8rem;
-  }
-  #login-card {
-    width: 250px;
-  }
-}
-
-@media screen and (max-width: 998px) {
-  html {
-    font-size: 1rem;
-  }
-}
-
 /* hidden class */
 .hidden {
   display: none !important;
@@ -67,50 +32,17 @@
 /* login page */
 #login-card,
 #about-card {
-  font-style: italic;
-  padding: 1rem;
-  position: absolute;
-  top: 20%;
-  left: 34%;
-  right: 0;
-  overflow: hidden;
-  /* margin: 0 auto; */
-  /* margin-top: 155px;
-  margin-bottom: 150px; */
-  background-color: #f0f0f0;
-  border: 5px rgb(175, 175, 175);
+  margin: auto;
+  width: 100%;
+  max-width: 400px;
 }
 
-/* profie page */
-#profile-card {
-  font-style: italic;
-  padding: 1rem;
-  position: absolute;
-  top: 20%;
-  left: 17%;
-  right: 0;
-  overflow: hidden;
-  /* margin: 0 auto; */
-  /* margin-top: 155px;
-  margin-bottom: 150px; */
-  background-color: #f0f0f0;
-  border: 5px rgb(175, 175, 175);
-}
-
-/* app setting  page */
+/* profie and settings page */
+#profile-card,
 #setting-card {
-  font-style: arial;
-  padding: 1rem;
-  position: absolute;
-  top: 20%;
-  left: 24%;
-  right: 0;
-  overflow: hidden;
-  /* margin: 0 auto; */
-  /* margin-top: 155px;
-  margin-bottom: 150px; */
-  background-color: #f0f0f0;
-  border: 5px rgb(175, 175, 175);
+  margin: auto;
+  width: 100%;
+  max-width: 500px;
 }
 
 /*setting form */
@@ -275,4 +207,78 @@ li:hover {
   flex: 1 0 auto;
   margin: 1.2em;
   margin-bottom: 70px;
+}
+
+/* responsive styling for different width */
+
+@media screen and (min-width: 576px) {
+  #login-card,
+  #about-card {
+    width: 75%;
+  }
+
+  #profile-card,
+  #setting-card {
+    width: 75%;
+  }
+}
+
+@media screen and (min-width: 768px) {
+  #login-card,
+  #about-card {
+    width: 60%;
+  }
+
+  #profile-card,
+  #setting-card {
+    width: 60%;
+  }
+}
+
+@media screen and (min-width: 992px) {
+  #login-card,
+  #about-card {
+    width: 50%;
+  }
+
+  #profile-card,
+  #setting-card {
+    width: 50%;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+  #login-card,
+  #about-card {
+    width: 35%;
+  }
+
+  #profile-card,
+  #setting-card {
+    width: 35%;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  #FaUserIcon {
+    display: none;
+    visibility: hidden;
+  }
+}
+
+/* Extension to bootstrap styles
+ * Don't write any other specific styles in this section
+ */
+
+@media screen and (min-width: 576px) {
+  .w-sm-75 {
+    width: 75% !important;
+  }
+}
+
+@media screen and (max-width: 575px) {
+  .mx-msm-auto {
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
 }

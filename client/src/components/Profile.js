@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, ListGroup, ListGroupItem, Row, Col } from 'react-bootstrap';
+import { Card, ListGroup, ListGroupItem } from 'react-bootstrap';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { withRouter } from 'react-router-dom';
@@ -13,6 +13,8 @@ class Profile extends React.Component {
       email: PropTypes.string.isRequired,
       name: PropTypes.string.isRequired,
       picture: PropTypes.string.isRequired,
+      root: PropTypes.string.isRequired,
+      setting: PropTypes.instanceOf(Object),
       uid: PropTypes.string.isRequired,
       userHandle: PropTypes.string.isRequired,
       username: PropTypes.string.isRequired
@@ -33,7 +35,7 @@ class Profile extends React.Component {
 
     return (
       <div className="d-flex flex-column justify-content-center align-items-center h-100">
-        <Card id="profile-card" style={{ width: '65%' }}>
+        <Card id="profile-card">
           <Card.Body>
             <Card.Title className="d-flex align-items-center">
               <img src={picture} alt="Profile" />
@@ -45,20 +47,12 @@ class Profile extends React.Component {
 
             <ListGroup className="list-group-flush">
               <ListGroupItem>
-                <Row>
-                  <Col sm={4}>UserHandle</Col>
-                  <Col>
-                    <em>{this.props.userHandle}</em>
-                  </Col>
-                </Row>
+                <h5>User handle</h5>
+                <em>{this.props.user.userHandle}</em>
               </ListGroupItem>
               <ListGroupItem>
-                <Row>
-                  <Col sm={4}>Email</Col>
-                  <Col>
-                    <em>{email}</em>
-                  </Col>
-                </Row>
+                <h5>Email</h5>
+                <em>{email}</em>
               </ListGroupItem>
             </ListGroup>
           </Card.Body>
@@ -72,7 +66,7 @@ class Profile extends React.Component {
 const mapStateToProps = state => {
   return {
     // get user settings
-    userHandle: state.setting.userHandle
+    user: state.user
   };
 };
 

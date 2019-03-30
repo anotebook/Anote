@@ -11,6 +11,8 @@ import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
 import Xlist from './xlist';
 import Shared from './shared';
+import SettingForm from './SettingForm';
+import AppSetting from './AppSetting';
 
 import toggleMenu, { widthChanged } from '../actions/toggleMenu';
 
@@ -24,6 +26,16 @@ function PrivateRoute({
   componentProps,
   ...rest
 }) {
+  PrivateRoute.propTypes = {
+    component: PropTypes.func.isRequired,
+    componentProps: PropTypes.instanceOf(Object),
+    isLoggedIn: PropTypes.bool.isRequired
+  };
+
+  PrivateRoute.defaultProps = {
+    componentProps: {}
+  };
+
   return (
     <Route
       {...rest}
@@ -34,6 +46,7 @@ function PrivateRoute({
           <Redirect
             to={{
               pathname: '/',
+              // eslint-disable-next-line react/prop-types
               state: { from: props.location }
             }}
           />
@@ -52,7 +65,22 @@ class App extends Component {
     isLoggedIn: PropTypes.bool,
     isMenuDisp: PropTypes.bool.isRequired,
     toggleMenu: PropTypes.func.isRequired,
+    user: PropTypes.shape({
+      _id: PropTypes.string.isRequired,
+      about: PropTypes.string,
+      email: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      picture: PropTypes.string.isRequired,
+      root: PropTypes.string.isRequired,
+      uid: PropTypes.string.isRequired,
+      userHandle: PropTypes.string.isRequired,
+      username: PropTypes.string.isRequired
+    }),
     widthChanged: PropTypes.func.isRequired
+  };
+
+  static defaultProps = {
+    user: {}
   };
 
   componentDidMount() {
@@ -127,25 +155,20 @@ class App extends Component {
               isLoggedIn={this.props.isLoggedIn}
               componentProps={{ create: 'folder' }}
             />
-
-            {/*
-            // To be enabled later
+            {/* // To be enabled later */}
             <PrivateRoute
               exact
               path="/settings/update"
               component={SettingForm}
               isLoggedIn={this.props.isLoggedIn}
             />
-
-            // render AppSettings and is valid for isLoggedIn User
+            {/* // render AppSettings and is valid for isLoggedIn User */}
             <PrivateRoute
               exact
               path="/settings"
               component={AppSetting}
               isLoggedIn={this.props.isLoggedIn}
             />
-            * /}
-
             {/* render User Info */}
             <PrivateRoute
               exact

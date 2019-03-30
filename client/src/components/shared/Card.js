@@ -1,5 +1,4 @@
 import React from 'react';
-import { Card } from 'react-bootstrap';
 import { FaFolder, FaStickyNote } from 'react-icons/fa';
 import PropTypes from 'prop-types';
 

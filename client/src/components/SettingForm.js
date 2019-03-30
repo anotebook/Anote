@@ -46,7 +46,7 @@ class SettingForm extends React.Component {
     return (
       <div
         className="settingForm d-flex flex-column
-           align-items-center h-100"
+        align-items-center h-100"
       >
         <Form onSubmit={this.updateSettings} autoComplete="off">
           <Row>

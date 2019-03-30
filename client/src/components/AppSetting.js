@@ -32,9 +32,9 @@ class AppSetting extends React.Component {
     return (
       <div
         className="d-flex flex-column
-          justify-content-center align-items-center h-100 w-75"
+        justify-content-center align-items-center h-100"
       >
-        <Card id="setting-card" style={{ width: '50%' }}>
+        <Card id="setting-card">
           <Card.Body
             style={{
               display: 'flex',
