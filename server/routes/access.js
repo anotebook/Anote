@@ -272,10 +272,11 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
       });
 
       searchResult.xlist = searchResult.xlist.filter(
-        x => !usersList.includes(x.email)
+        x => !(usersList.includes(x.email) || x.email === req.user.email)
       );
       for (let i = 0; i < userListWithPermission.length && action; i += 1)
-        searchResult.xlist.push(userListWithPermission[i]);
+        if (userListWithPermission[i].email !== req.user.email)
+          searchResult.xlist.push(userListWithPermission[i]);
 
       const regex = new RegExp(`^${searchResult.path}`.replace(/\$/g, '\\$'));
       let foldersUpdatePromise;
