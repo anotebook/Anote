@@ -19,6 +19,21 @@ app.get('/check', (req, res) => {
     .catch(() => res.status(500).json({ reason: 'Internal error' }));
 });
 
+// authenticate the user and set the req.user to it's properties
+const auth = (req, res, next) => {
+  // Get the auth token of the user which sent the request
+  const idToken = req.header('Authorization');
+  // Verify the user and then continue further steps
+  verifyUser(idToken)
+    .then(user => {
+      req.user = user;
+      next();
+    })
+    .catch(err =>
+      res.status(404).json({ error: `authentication failed!\n${err}` })
+    );
+};
+
 /*
  * Handle API request to create a user
  *
@@ -26,43 +41,43 @@ app.get('/check', (req, res) => {
  * Then, check if user already exists. If exists, return user data.
  * If user doesn't exists, create one and return user's data.
  */
-app.post('/create', (req, res) => {
+app.post('/create', auth, (req, res) => {
   // Verify integrity of id token and client id
-  verifyUser(req.body.id_token)
-    .then(user => {
-      // Verification successful!
-
-      // Find if user exists in databse
-      User.findOne({ uid: user.uid })
-        .then(async result => {
-          console.log(result);
-          // If user doesn't exist, create one. Else, return data
-          if (result === null) {
-            // User doesn't exist, create one and return the data
-            user.username = `${user.name.replace(/ /g, '_')}_${hash(user)}`;
-            const folder = {
-              name: 'root',
-              owner: user.uid,
-              timestamp: Date.now(),
-              parentFolder: 'root',
-              xlist: []
-            };
-            folder.id = hash(folder);
-            folder.path = folder.id;
-            const rootFolder = new Folder(folder);
-            await rootFolder.save();
-            user.root = folder.id;
-
-            const newUser = new User(user);
-            newUser.save().then(user0 => res.status(200).json(user0));
-          } else {
-            // User already exists, just return the data
-            res.status(200).json(result);
-          }
-        })
-        .catch((/* err */) => {
-          res.status(500).json({ reason: 'Internal error' });
-        });
+  // Find if user exists in databse
+  User.findOne({ uid: req.user.uid })
+    .then(result => {
+      console.log(result);
+      // If user doesn't exist, create one. Else, return data
+      if (result !== null) {
+        res.status(200).json(result);
+        return null;
+      }
+      // User doesn't exist, create one and return the data
+      req.user.username = `${req.user.name.replace(/ /g, '_')}_${hash(
+        req.user
+      )}`;
+      const folder = {
+        name: 'root',
+        owner: req.user.uid,
+        timestamp: Date.now(),
+        parentFolder: 'root',
+        xlist: []
+      };
+      folder.id = hash(folder);
+      folder.path = folder.id;
+      const rootFolder = new Folder(folder);
+      // await rootFolder.save();
+      return rootFolder.save();
+    })
+    .then(folder => {
+      if (!folder) return null;
+      req.user.root = folder.id;
+      const newUser = new User(req.user);
+      return newUser.save();
+    })
+    .then(user0 => {
+      if (!user0) return;
+      res.json(user0);
     })
     .catch(err => {
       console.log(err);
