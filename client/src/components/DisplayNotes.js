@@ -16,7 +16,9 @@ class DisplayNotes extends Component {
     // Type [note/grp/folder]
     type: PropTypes.string.isRequired,
     // User's root folder
-    userRootFolder: PropTypes.string.isRequired
+    userRootFolder: PropTypes.string.isRequired,
+    // Visiblity for the folder
+    visibility: PropTypes.number.isRequired
   };
 
   state = {
@@ -138,6 +140,7 @@ class DisplayNotes extends Component {
             type={this.props.type}
             title={item.title || item.name}
             updated={item.timestamp}
+            visibility={this.props.visibility}
           />
         ))}
       </CardColumns>

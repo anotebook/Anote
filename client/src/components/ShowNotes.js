@@ -107,10 +107,10 @@ class ShowNotes extends Component {
         {/* 3 Tabs for note/grp/folder */}
         <Tabs defaultActiveKey="notes">
           <Tab eventKey="notes" title="Notes">
-            <DisplayNotes type="note" />
+            <DisplayNotes type="note" visibility={visibility} />
           </Tab>
           <Tab eventKey="folders" title="Folders">
-            <DisplayNotes type="folder" />
+            <DisplayNotes type="folder" visibility={visibility} />
           </Tab>
           {/* Folder settings is available only if user is the owner */}
           {this.props.user.uid === this.state.folderMeta.owner && (
