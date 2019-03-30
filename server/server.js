@@ -1,6 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import mongoose from 'mongoose';
+import path from 'path';
 
 import notesRoute from './routes/notes';
 import usersRoute from './routes/user';
@@ -27,15 +28,19 @@ mongoose.connect(process.env.REACT_APP_MONGODB_URI, {
   useFindAndModify: false
 });
 
-// TODO: Serve static content from react production build
-app.get('/', (req, res) => {
-  res.send('Hello World!');
-});
-
 app.use(`${baseUrl}/access`, accessRoute);
 app.use(`${baseUrl}/notes`, notesRoute);
 app.use(`${baseUrl}/users`, usersRoute);
 app.use(`${baseUrl}/xlist`, xlistRoute);
 app.use(`${baseUrl}/folders`, foldersRoute);
+
+if (process.env.NODE_ENV === 'production') {
+  // Set static folder
+  app.use(express.static('../client/build'));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.resolve(__dirname, '..', 'client', 'build'));
+  });
+}
 
 app.listen(port, () => `Listening on port ${port}`);
