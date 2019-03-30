@@ -76,6 +76,7 @@ class XlistCardContainer extends React.Component {
 
   deleteId = element => {
     const name = element.id.split('$$')[1];
+
     server()
       .delete(`/xlist/me/${name}`)
       .then(() => {
@@ -83,9 +84,9 @@ class XlistCardContainer extends React.Component {
 
         // update the myXlist state
         this.setState(prvState => {
-          prvState.myXlists.filter(x => x.name !== name);
+          prvState.myXlists = prvState.myXlists.filter(x => x.name !== name);
           return {
-            myXlist: { ...prvState.myXlist }
+            myXlists: prvState.myXlists
           };
         });
       })
