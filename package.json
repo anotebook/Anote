@@ -17,7 +17,7 @@
     "build-client": "cd client && npm run build",
     "build-server": "cd server && npm run build",
     "build": "concurrently --kill-others-on-fail \"npm run build-client\" \"npm run build-server\"",
-    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run build",
+    "heroku-prebuild": "NPM_CONFIG_PRODUCTION=false npm install",
     "start": "cd server && npm start"
   },
   "author": "anotebook",
