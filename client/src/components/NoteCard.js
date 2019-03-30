@@ -10,7 +10,8 @@ class NoteCard extends Component {
     id: PropTypes.string.isRequired,
     title: PropTypes.string,
     type: PropTypes.string.isRequired,
-    updated: PropTypes.number
+    updated: PropTypes.number,
+    visibility: PropTypes.number.isRequired
   };
 
   static defaultProps = {
@@ -31,6 +32,7 @@ class NoteCard extends Component {
             id={this.props.id}
             className="ml-auto btn-delete"
             variant="outline-danger"
+            disabled={this.props.visibility < 1}
           >
             Delete
           </Button>
