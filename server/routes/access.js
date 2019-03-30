@@ -103,7 +103,7 @@ app.get('/shared/with-me/:type', auth, (req, res) => {
         prvString = currString;
       }
 
-      for (let i = 0; i < result.length; i += 1) console.log(result[i]);
+      // for (let i = 0; i < result.length; i += 1) console.log(result[i]);
 
       const folderPaths = folders.map(x => x.path);
       // filter the notes result from those which can
