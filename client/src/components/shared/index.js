@@ -49,7 +49,11 @@ class Shared extends React.Component {
   };
 
   onTabSelect = activeKey => {
-    this.setState({ key: activeKey });
+    this.setState({
+      key: activeKey,
+      notes: [],
+      folders: []
+    });
     this.refresh(activeKey);
   };
 
@@ -101,7 +105,16 @@ class Shared extends React.Component {
             <Card type="note" arr={this.state.notes} className="mt-4 pt-3" />
           </div>
         </Tab>
-        <Tab eventKey="write" title="Read-Write" />
+        <Tab eventKey="write" title="Read-Write">
+          <div
+            onClick={this.handleClick}
+            role="main"
+            onKeyPress={this.handleClick}
+          >
+            <Card type="folder" arr={this.state.folders} />
+            <Card type="note" arr={this.state.notes} className="mt-4 pt-3" />
+          </div>
+        </Tab>
       </Tabs>
     );
   }
