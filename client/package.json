@@ -21,7 +21,6 @@
     "redux": "^4.0.1",
     "sort-by": "^1.2.0"
   },
-  "proxy": "http://localhost:5000/",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

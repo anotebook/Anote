@@ -19,7 +19,11 @@ let axios = ax;
 
 // Options for axios
 const options = {
-  baseURL: 'http://localhost:3000/api/v1/',
+  baseURL: `${
+    process.env.NODE_ENV === 'production'
+      ? 'htps://anotebook.herokuapp.com'
+      : 'http://localhost:3000'
+  }/api/v1/`,
   headers: {
     Authorization: null
   }
