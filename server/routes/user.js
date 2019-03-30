@@ -35,6 +35,7 @@ app.post('/create', (req, res) => {
       // Find if user exists in databse
       User.findOne({ uid: user.uid })
         .then(async result => {
+          console.log(result);
           // If user doesn't exist, create one. Else, return data
           if (result === null) {
             // User doesn't exist, create one and return the data
@@ -64,6 +65,7 @@ app.post('/create', (req, res) => {
         });
     })
     .catch(err => {
+      console.log(err);
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
