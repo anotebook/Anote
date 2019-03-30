@@ -9,7 +9,7 @@
     "prettier-watch": "onchange 'client/src/**/*.{js,css,json}' 'server/**/*.{js,json}' -- prettier --write {{changed}}",
     "client": "cd client && npm run dev",
     "server": "cd server && npm start ",
-    "install-all": "npm install && concurrently --kill-others-on-fail \"npm run install-client\" \"npm run install-server\"",
+    "install-all": "concurrently --kill-others-on-fail \"npm run install-client\" \"npm run install-server\"",
     "dev": "concurrently --kill-others-on-fail \"npm run prettier-watch\" \"npm run server\" \"npm run client\"",
     "clean-client": "cd client && npm run clean",
     "clean-server": "cd server && npm run clean",
@@ -17,7 +17,7 @@
     "build-client": "cd client && npm run build",
     "build-server": "cd server && npm run build",
     "build": "concurrently --kill-others-on-fail \"npm run build-client\" \"npm run build-server\"",
-    "heroku-prebuild": "NPM_CONFIG_PRODUCTION=false npm run install-all",
+    "heroku-prebuild": "NPM_CONFIG_PRODUCTION=false npm install && npm run install-all",
     "start": "cd server && npm start"
   },
   "author": "anotebook",
