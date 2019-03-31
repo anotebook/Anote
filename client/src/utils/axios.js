@@ -23,7 +23,7 @@ const options = {
     process.env.NODE_ENV === 'production'
       ? 'https://anotebook.herokuapp.com'
       : 'http://localhost:3000'
-    }/api/v1/`,
+  }/api/v1/`,
   headers: {
     Authorization: null
   }

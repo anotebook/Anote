@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { CardColumns } from 'react-bootstrap';
+import { CardColumns, Modal, Button } from 'react-bootstrap';
 
 import NoteCard from './NoteCard';
 
@@ -23,7 +23,11 @@ class DisplayNotes extends Component {
 
   state = {
     // Store the notes
-    contentArray: []
+    contentArray: [],
+    // State if confirmation modal should be opened or closed
+    isConfirmDeleteOpen: false,
+    // Stores the id of the note/folder to be deleted
+    toBeDeleted: null
   };
 
   /*
@@ -79,6 +83,39 @@ class DisplayNotes extends Component {
     return null;
   };
 
+  // Show delete confirmation modal
+  confirmAndDelete = _id => {
+    this.setState({ toBeDeleted: _id, isConfirmDeleteOpen: true });
+  };
+
+  // Delete the content specified
+  deleteContent = _id => {
+    if (!_id) return;
+    const index = parseInt(_id, 10);
+    const { id } = this.state.contentArray[index];
+    // Send the delete request
+    axios()
+      .delete(`/${this.props.type}s/delete/${id}`)
+      .then((/* res */) => {
+        this.setState(prevState => {
+          prevState.contentArray.splice(index, 1);
+          return {
+            contentArray: prevState.contentArray,
+            toBeDeleted: null,
+            isConfirmDeleteOpen: false
+          };
+        });
+      })
+      .catch((/* err */) => {
+        // TODO: Notify user of the error
+      });
+  };
+
+  // Close delete confirmation modal
+  closeDeleteConfirmation = () => {
+    this.setState({ toBeDeleted: null, isConfirmDeleteOpen: false });
+  };
+
   /*
    * When the card column is clicked, this is called
    *
@@ -101,23 +138,9 @@ class DisplayNotes extends Component {
           break;
         }
         // If the button is clicked, delete the button
-        case 'BUTTON': {
-          const index = parseInt(clicked.id, 10);
-          const { id } = this.state.contentArray[index];
-          // Send the delete request
-          axios()
-            .delete(`/${this.props.type}s/delete/${id}`)
-            .then((/* res */) => {
-              this.setState(prevState => {
-                prevState.contentArray.splice(index, 1);
-                return { contentArray: prevState.contentArray };
-              });
-            })
-            .catch((/* err */) => {
-              // TODO: Notify user of the error
-            });
+        case 'BUTTON':
+          this.confirmAndDelete(clicked.id);
           break;
-        }
         default:
           break;
       }
@@ -126,24 +149,52 @@ class DisplayNotes extends Component {
 
   render() {
     return (
-      <CardColumns
-        className="h-100"
-        onClick={e => this.handleCardColumnClick(e.target)}
-      >
-        {/*
-         * Show the fetched notes
-         */}
-        {this.state.contentArray.map((item, index) => (
-          <NoteCard
-            key={item.id}
-            id={index.toString()}
-            type={this.props.type}
-            title={item.title || item.name}
-            updated={item.timestamp}
-            visibility={this.props.visibility}
-          />
-        ))}
-      </CardColumns>
+      <>
+        <CardColumns
+          className="h-100"
+          onClick={e => this.handleCardColumnClick(e.target)}
+        >
+          {/*
+           * Show the fetched notes
+           */}
+          {this.state.contentArray.map((item, index) => (
+            <NoteCard
+              key={item.id}
+              id={index.toString()}
+              type={this.props.type}
+              title={item.title || item.name}
+              updated={item.timestamp}
+              visibility={this.props.visibility}
+            />
+          ))}
+        </CardColumns>
+        {/* Modal for delete confirmation */}
+        <Modal
+          show={this.state.isConfirmDeleteOpen}
+          onHide={this.closeDeleteConfirmation}
+        >
+          <Modal.Header>
+            <Modal.Title>Confirm delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete?</Modal.Body>
+          <Modal.Footer>
+            {/* Cancel deletion */}
+            <Button
+              variant="outline-secondary"
+              onClick={this.closeDeleteConfirmation}
+            >
+              Oops! Go back
+            </Button>
+            {/* Confirmation deletion */}
+            <Button
+              variant="danger"
+              onClick={() => this.deleteContent(this.state.toBeDeleted)}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </>
     );
   }
 }

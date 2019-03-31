@@ -71,7 +71,7 @@ app.post('/create', auth, (req, res) => {
       };
       note.id = hash(note);
       note.xlist = resultFolder.xlist.slice();
-      note.path = `${resultFolder.path}$${note.id}`;
+      note.path = `${resultFolder.path}`;
 
       const newNote = new Note(note);
       return newNote.save();

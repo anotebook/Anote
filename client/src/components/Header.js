@@ -14,7 +14,7 @@ class Header extends React.Component {
       <Navbar
         collapseOnSelect="true"
         expand="sm"
-        className="Appheader bg-light"
+        className="Appheader"
         variant="light"
         fixed="top"
       >

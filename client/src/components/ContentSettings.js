@@ -293,9 +293,6 @@ class FolderSettings extends Component {
             </>
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="outline-danger" onClick={this.closeXlist}>
-              Cancel
-            </Button>
             <Button onClick={this.closeXlist}>Done</Button>
           </Modal.Footer>
         </Modal>
