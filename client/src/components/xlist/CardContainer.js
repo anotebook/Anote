@@ -1,5 +1,5 @@
 import React from 'react';
-import { CardColumns, Button, Form } from 'react-bootstrap';
+import { CardColumns, Button, Form, Modal } from 'react-bootstrap';
 import { Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { FaPlus } from 'react-icons/fa';
@@ -33,7 +33,12 @@ class XlistCardContainer extends React.Component {
     clickedCardType: null,
 
     addXlistClicked: false,
-    addXlistError: null
+    addXlistError: null,
+
+    // State if confirmation modal should be opened or closed
+    isConfirmDeleteOpen: false,
+    // Stores the id of the note/folder to be deleted
+    toBeDeleted: null
   };
 
   componentDidMount() {
@@ -74,8 +79,8 @@ class XlistCardContainer extends React.Component {
     return null;
   };
 
-  deleteId = element => {
-    const name = element.id.split('$$')[1];
+  deleteId = _id => {
+    const name = _id.split('$$')[1];
 
     server()
       .delete(`/xlist/me/${name}`)
@@ -86,7 +91,9 @@ class XlistCardContainer extends React.Component {
         this.setState(prvState => {
           prvState.myXlists = prvState.myXlists.filter(x => x.name !== name);
           return {
-            myXlists: prvState.myXlists
+            myXlists: prvState.myXlists,
+            toBeDeleted: null,
+            isConfirmDeleteOpen: false
           };
         });
       })
@@ -98,12 +105,17 @@ class XlistCardContainer extends React.Component {
       });
   };
 
+  // Show delete confirmation modal
+  confirmAndDelete = _id => {
+    this.setState({ toBeDeleted: _id, isConfirmDeleteOpen: true });
+  };
+
   onClick = e => {
     e.preventDefault();
 
     // clicked the delete button
     if (e.target.id.includes('delete$$')) {
-      this.deleteId(e.target);
+      this.confirmAndDelete(e.target.id);
       return;
     }
 
@@ -114,6 +126,11 @@ class XlistCardContainer extends React.Component {
         clickedCardName: cardNameAndEmail[0]
       });
     }
+  };
+
+  // Close delete confirmation modal
+  closeDeleteConfirmation = () => {
+    this.setState({ toBeDeleted: null, isConfirmDeleteOpen: false });
   };
 
   convertArrayToString = arr => {
@@ -206,6 +223,33 @@ class XlistCardContainer extends React.Component {
             </Button>
           </div>
         </VerticallyCenteredModal>
+
+        {/* Modal for delete confirmation */}
+        <Modal
+          show={this.state.isConfirmDeleteOpen}
+          onHide={this.closeDeleteConfirmation}
+        >
+          <Modal.Header>
+            <Modal.Title>Confirm delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>Are you sure you want to delete?</Modal.Body>
+          <Modal.Footer>
+            {/* Cancel deletion */}
+            <Button
+              variant="outline-secondary"
+              onClick={this.closeDeleteConfirmation}
+            >
+              Oops! Go back
+            </Button>
+            {/* Confirmation deletion */}
+            <Button
+              variant="danger"
+              onClick={() => this.deleteId(this.state.toBeDeleted)}
+            >
+              Yes
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }

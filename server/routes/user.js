@@ -42,11 +42,12 @@ const auth = (req, res, next) => {
  * If user doesn't exists, create one and return user's data.
  */
 app.post('/create', auth, (req, res) => {
+  /* console.log(req); */
   // Verify integrity of id token and client id
   // Find if user exists in databse
   User.findOne({ uid: req.user.uid })
     .then(result => {
-      console.log(result);
+      /* console.log(result); */
       // If user doesn't exist, create one. Else, return data
       if (result !== null) {
         res.status(200).json(result);
@@ -80,7 +81,7 @@ app.post('/create', auth, (req, res) => {
       res.json(user0);
     })
     .catch(err => {
-      console.log(err);
+      /* console.log(err); */
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
