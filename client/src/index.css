@@ -1,6 +1,7 @@
 body {
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
   padding-top: 58px; /* To avoid overlay of content caused by navbar-fixed-top   */
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
@@ -12,7 +13,6 @@ body {
 html,
 body,
 #root {
-  overflow-x: hidden;
   height: 100%;
 }
 
