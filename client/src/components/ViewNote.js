@@ -6,7 +6,7 @@ import { convertToRaw, KeyBindingUtil } from 'draft-js';
 import { Editor, createEditorState, keyBindingFn } from 'medium-draft';
 import mediumDraftImporter from 'medium-draft/lib/importer';
 import mediumDraftExporter from 'medium-draft/lib/exporter';
-import { Button, Alert } from 'react-bootstrap';
+import { Button, Alert, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaRegSave } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 
@@ -184,7 +184,9 @@ class ViewNote extends Component {
         <div className="d-flex">
           <div className="flex-grow-1">
             {this.state.isSettingsOpen && (
-              <ContentSettings contentId={this.state.note.id} type="note" />
+              <div className="m-3">
+                <ContentSettings contentId={this.state.note.id} type="note" />
+              </div>
             )}
             {!this.state.isSettingsOpen && (
               <>
@@ -238,21 +240,13 @@ class ViewNote extends Component {
               className="d-flex flex-column"
               style={{ position: 'fixed', right: '0', zIndex: '1000' }}
             >
-              <Button
-                onClick={this.saveNote}
-                style={{
-                  width: '40px',
-                  height: '40px',
-                  borderRadius: '20px',
-                  margin: '8px'
-                }}
+              <OverlayTrigger
+                delay={{ show: 250, hide: 200 }}
+                overlay={<Tooltip>Save</Tooltip>}
+                placement="auto"
               >
-                <FaRegSave />
-              </Button>
-              {/* Settings should be accessible only is user is the owner */}
-              {this.props.user.uid === this.state.note.owner && (
                 <Button
-                  onClick={this.openNoteSettings}
+                  onClick={this.saveNote}
                   style={{
                     width: '40px',
                     height: '40px',
@@ -260,8 +254,32 @@ class ViewNote extends Component {
                     margin: '8px'
                   }}
                 >
-                  <MdSettings />
+                  <FaRegSave />
                 </Button>
+              </OverlayTrigger>
+              {/* Settings should be accessible only is user is the owner */}
+              {this.props.user.uid === this.state.note.owner && (
+                <OverlayTrigger
+                  delay={{ show: 250, hide: 200 }}
+                  overlay={<Tooltip>Settings</Tooltip>}
+                  placement="auto"
+                >
+                  <Button
+                    className="btn-content-settings"
+                    onClick={this.openNoteSettings}
+                    style={{
+                      width: '40px',
+                      height: '40px',
+                      borderRadius: '20px',
+                      margin: '8px',
+                      padding: '8px',
+                      lineHeight: '12px',
+                      verticalAlign: 'middle'
+                    }}
+                  >
+                    <MdSettings className="m-auto" />
+                  </Button>
+                </OverlayTrigger>
               )}
             </div>
           )}

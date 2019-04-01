@@ -209,6 +209,14 @@ li:hover {
   margin-bottom: 70px;
 }
 
+.btn-content-settings {
+  transition: all 0.2s;
+}
+
+.btn-content-settings:hover {
+  transform: rotateZ(45deg);
+}
+
 /* responsive styling for different width */
 
 @media screen and (min-width: 576px) {

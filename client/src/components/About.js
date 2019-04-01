@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, CardDeck } from 'react-bootstrap';
+import { Card, CardDeck, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { FaFacebook, FaTwitter, FaGithub, FaLinkedin } from 'react-icons/fa';
 
 import Subham from '../assets/images/dp_subham.png';
@@ -19,11 +19,13 @@ class About extends React.Component {
       ),
       profiles: [
         {
+          name: 'Github',
           icon: FaGithub,
           link: 'https://github.com/subham301',
           color: 'black'
         },
         {
+          name: 'Facebook',
           icon: FaFacebook,
           link: 'https://www.facebook.com/subham.agarwal.1004837',
           color: '#3b5998'
@@ -40,21 +42,25 @@ class About extends React.Component {
       ),
       profiles: [
         {
+          name: 'Github',
           icon: FaGithub,
           link: 'https://github.com/Rishav-Agarwal',
           color: 'black'
         },
         {
+          name: 'Twitter',
           icon: FaTwitter,
           link: 'https://twitter.com/MrRedible',
           color: '#00acee'
         },
         {
+          name: 'Linkedin',
           icon: FaLinkedin,
           link: 'https://www.linkedin.com/in/mr-redible/',
           color: '#4875b4'
         },
         {
+          name: 'Facebook',
           icon: FaFacebook,
           link: 'https://www.facebook.com/rishav.agarwal97',
           color: '#3b5998'
@@ -71,11 +77,13 @@ class About extends React.Component {
       ),
       profiles: [
         {
+          name: 'Github',
           icon: FaGithub,
           link: 'https://github.com/theSparkPlug',
           color: 'black'
         },
         {
+          name: 'Facebook',
           icon: FaFacebook,
           link: 'https://www.facebook.com/praduman.kumar.39982',
           color: '#3b5998'
@@ -97,20 +105,22 @@ class About extends React.Component {
       </Card.Body>
       <Card.Footer className="d-flex justify-content-end">
         {props.about.profiles.map(profile => (
-          <a
-            href={profile.link}
-            target="_blank"
-            rel="noopener noreferrer"
+          <OverlayTrigger
+            delay={{ show: 250, hide: 200 }}
+            overlay={<Tooltip>{profile.name}</Tooltip>}
+            placement="auto"
             key={profile.link}
           >
-            <profile.icon
-              style={{
-                color: profile.color,
-                fontSize: '1.25em',
-                margin: '8px'
-              }}
-            />
-          </a>
+            <a href={profile.link} target="_blank" rel="noopener noreferrer">
+              <profile.icon
+                style={{
+                  color: profile.color,
+                  fontSize: '1.25em',
+                  margin: '8px'
+                }}
+              />
+            </a>
+          </OverlayTrigger>
         ))}
       </Card.Footer>
     </Card>

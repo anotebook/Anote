@@ -18,6 +18,28 @@ const port = process.env.PORT || 5000;
 // Base url for our api
 const baseUrl = '/api/v1';
 
+if (process.env.NODE_ENV === 'production') {
+  /*
+   * Redirect user to https if requested on http
+   *
+   * Refer this for explaination:
+   * https://www.tonyerwin.com/2014/09/redirecting-http-to-https-with-nodejs.html
+   */
+  app.enable('trust proxy');
+  app.use((req, res, next) => {
+    // console.log('secure check');
+    if (req.secure) {
+      // console.log('secure');
+      // request was via https, so do no special handling
+      next();
+    } else {
+      //
+      // request was via http, so redirect to https
+      res.redirect(`https://${req.headers.host}${req.url}`);
+    }
+  });
+}
+
 // Body parser middleware for json and url encoded data
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

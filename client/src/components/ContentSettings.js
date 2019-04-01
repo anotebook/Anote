@@ -6,8 +6,11 @@ import {
   Modal,
   Button,
   InputGroup,
-  FormControl
+  FormControl,
+  OverlayTrigger,
+  Tooltip
 } from 'react-bootstrap';
+import { FaRegListAlt } from 'react-icons/fa';
 import { MdEdit, MdVisibility } from 'react-icons/md';
 
 import axios from '../utils/axios';
@@ -181,9 +184,15 @@ class FolderSettings extends Component {
   render() {
     return (
       <>
+        <h3>Settings</h3>
         {/* Settings option for the content */}
-        <ListGroup>
-          <ListGroupItem action onClick={this.openXlist}>
+        <ListGroup className="ml-2 mr-5">
+          <ListGroupItem
+            action
+            onClick={this.openXlist}
+            className="d-flex align-items-center"
+          >
+            <FaRegListAlt className="mr-2" />
             X-List
           </ListGroupItem>
         </ListGroup>
@@ -205,12 +214,22 @@ class FolderSettings extends Component {
                   {/* Options for the user */}
                   <div className="d-flex">
                     {/* Visibility changing option */}
-                    <Button
-                      onClick={() => this.changeVisibilty(index)}
-                      variant="outline-primary"
+                    <OverlayTrigger
+                      delay={{ show: 250, hide: 200 }}
+                      overlay={
+                        <Tooltip>
+                          {item.visibility ? 'Edit' : 'View only'}
+                        </Tooltip>
+                      }
+                      placement="auto"
                     >
-                      {item.visibility ? <MdEdit /> : <MdVisibility />}
-                    </Button>
+                      <Button
+                        onClick={() => this.changeVisibilty(index)}
+                        variant="outline-primary"
+                      >
+                        {item.visibility ? <MdEdit /> : <MdVisibility />}
+                      </Button>
+                    </OverlayTrigger>
                     {/* Remove access button */}
                     <button
                       type="button"
@@ -235,12 +254,22 @@ class FolderSettings extends Component {
               />
               {/* Visibility of new user */}
               <InputGroup.Append>
-                <Button
-                  onClick={this.toggleNewVisibility}
-                  variant="outline-primary"
+                <OverlayTrigger
+                  delay={{ show: 250, hide: 200 }}
+                  overlay={
+                    <Tooltip>
+                      {this.state.newVisibility ? 'Edit' : 'View only'}
+                    </Tooltip>
+                  }
+                  placement="auto"
                 >
-                  {this.state.newVisibility ? <MdEdit /> : <MdVisibility />}
-                </Button>
+                  <Button
+                    onClick={this.toggleNewVisibility}
+                    variant="outline-primary"
+                  >
+                    {this.state.newVisibility ? <MdEdit /> : <MdVisibility />}
+                  </Button>
+                </OverlayTrigger>
               </InputGroup.Append>
               {/* Add button for new user */}
               <InputGroup.Append>
@@ -259,16 +288,26 @@ class FolderSettings extends Component {
                 />
                 {/* Visibility of new user */}
                 <InputGroup.Append>
-                  <Button
-                    onClick={this.toggleNewXlistVisibility}
-                    variant="outline-primary"
+                  <OverlayTrigger
+                    delay={{ show: 250, hide: 200 }}
+                    overlay={
+                      <Tooltip>
+                        {this.state.newXlistVisibility ? 'Edit' : 'View only'}
+                      </Tooltip>
+                    }
+                    placement="auto"
                   >
-                    {this.state.newXlistVisibility ? (
-                      <MdEdit />
-                    ) : (
-                      <MdVisibility />
-                    )}
-                  </Button>
+                    <Button
+                      onClick={this.toggleNewXlistVisibility}
+                      variant="outline-primary"
+                    >
+                      {this.state.newXlistVisibility ? (
+                        <MdEdit />
+                      ) : (
+                        <MdVisibility />
+                      )}
+                    </Button>
+                  </OverlayTrigger>
                 </InputGroup.Append>
               </InputGroup>
               {/* Show the x-list matches based on the query */}

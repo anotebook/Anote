@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Route, withRouter } from 'react-router-dom';
+import { Route, withRouter, Switch } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
 import ShowNotes from './ShowNotes';
@@ -16,7 +16,7 @@ class NoteContainer extends Component {
 
   render() {
     return (
-      <>
+      <Switch>
         <Route exact path="/notes/show" component={ShowNotes} />
         <Route exact path="/notes/open/:id" component={ViewNote} />
         <Route
@@ -30,7 +30,8 @@ class NoteContainer extends Component {
           sensitive
           component={ShowNotes}
         />
-      </>
+        <Route path="/" render={() => <h1>Not found!</h1>} />
+      </Switch>
     );
   }
 }
