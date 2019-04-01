@@ -2,9 +2,9 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-
 import { FaRegStickyNote, FaRegListAlt } from 'react-icons/fa';
 import { MdPeopleOutline, MdHelpOutline, MdMenu } from 'react-icons/md';
+
 import toggleMenu from '../actions/toggleMenu';
 
 class Scrollspy extends React.Component {
@@ -40,7 +40,7 @@ class Scrollspy extends React.Component {
             padding: '0',
             top: 10,
             left: 15,
-            zIndex: 10000,
+            zIndex: 1040,
             border: 'none',
             outline: 'none',
             background: 'none'
