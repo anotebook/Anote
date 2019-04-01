@@ -131,6 +131,7 @@
     "react/boolean-prop-naming": 1,
     "react/jsx-boolean-value": 1,
     "jsx-a11y/no-noninteractive-element-interactions": 0,
-    "no-underscore-dangle": 0
+    "no-underscore-dangle": 0,
+    "react/jsx-wrap-multilines": 0
   }
 }

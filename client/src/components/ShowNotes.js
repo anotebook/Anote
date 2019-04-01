@@ -48,8 +48,12 @@ class ShowNotes extends Component {
       style={{ ...props.style }}
     >
       <ul>
-        <li id="create$note">Note</li>
-        <li id="create$folder">Folder</li>
+        <li id="create$note" className="h5">
+          Note
+        </li>
+        <li id="create$folder" className="h5">
+          Folder
+        </li>
       </ul>
     </Popover>
   );

@@ -11,8 +11,8 @@ import Scrollspy from './Scrollspy';
 import NoteContainer from './NoteContainer';
 import Xlist from './xlist';
 import Shared from './shared';
-import SettingForm from './SettingForm';
-import AppSetting from './AppSetting';
+/* import SettingForm from './SettingForm';
+import AppSetting from './AppSetting'; */
 
 import toggleMenu, { widthChanged } from '../actions/toggleMenu';
 
@@ -155,20 +155,22 @@ class App extends Component {
               isLoggedIn={this.props.isLoggedIn}
               componentProps={{ create: 'folder' }}
             />
+
             {/* // To be enabled later */}
-            <PrivateRoute
+            {/* <PrivateRoute
               exact
               path="/settings/update"
               component={SettingForm}
               isLoggedIn={this.props.isLoggedIn}
             />
-            {/* // render AppSettings and is valid for isLoggedIn User */}
+            // render AppSettings and is valid for isLoggedIn User
             <PrivateRoute
               exact
               path="/settings"
               component={AppSetting}
               isLoggedIn={this.props.isLoggedIn}
-            />
+            /> */}
+
             {/* render User Info */}
             <PrivateRoute
               exact
@@ -187,6 +189,7 @@ class App extends Component {
               component={Shared}
               isLoggedIn={this.props.isLoggedIn}
             />
+            <Route path="/" render={() => <h1>Not found!</h1>} />
           </Switch>
         </div>
       </div>
