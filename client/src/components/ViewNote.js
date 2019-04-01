@@ -6,7 +6,7 @@ import { convertToRaw, KeyBindingUtil } from 'draft-js';
 import { Editor, createEditorState, keyBindingFn } from 'medium-draft';
 import mediumDraftImporter from 'medium-draft/lib/importer';
 import mediumDraftExporter from 'medium-draft/lib/exporter';
-import { Button } from 'react-bootstrap';
+import { Button, Alert } from 'react-bootstrap';
 import { FaRegSave } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 
@@ -40,7 +40,8 @@ class ViewNote extends Component {
     title: '',
     note: {},
     visibility: undefined,
-    isSettingsOpen: false
+    isSettingsOpen: false,
+    isSuccessAlertOpen: false
   };
 
   refsEditor = React.createRef();
@@ -127,7 +128,8 @@ class ViewNote extends Component {
         content
       })
       .then((/* oldNote */) => {
-        // TODO: Inform user about successful update
+        this.setState({ isSuccessAlertOpen: true });
+        setTimeout(this.closeNoteSavedAlert, 2500);
       })
       .catch((/* err */) => {
         // TODO: Inform user about the error
@@ -166,6 +168,11 @@ class ViewNote extends Component {
     });
   };
 
+  // Close the note saved alert notification
+  closeNoteSavedAlert = () => {
+    this.setState({ isSuccessAlertOpen: false });
+  };
+
   render() {
     const width = window.innerWidth - (this.props.isMenuDisp ? 250 : 70);
 
@@ -173,78 +180,66 @@ class ViewNote extends Component {
     if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
     if (visibility < 0) return <h1>Access denied</h1>;
     return (
-      <div className="d-flex">
-        <div className="flex-grow-1">
-          {this.state.isSettingsOpen && (
-            <ContentSettings contentId={this.state.note.id} type="note" />
-          )}
-          {!this.state.isSettingsOpen && (
-            <>
-              {/* Note title */}
-              <input
-                value={this.state.title}
-                onChange={e => this.handleTitleChange(e.target.value)}
-                style={{
-                  outline: 'none',
-                  border: 'none',
-                  padding: '8px',
-                  fontSize: '1.75em',
-                  width: '100%'
-                }}
-                disabled={
-                  typeof this.state.visibility === 'undefined' ||
-                  this.state.visibility < 1
-                }
-              />
-              {/* Note editor */}
-              <div style={{ width: `${width}px` }}>
-                <Editor
-                  ref={this.refsEditor}
-                  editorState={this.state.editorState}
-                  onChange={this.onEditorStateChange}
-                  placeholder="Make note of..."
-                  keyBindingFn={this.keyBinding}
-                  handleKeyCommand={this.handleKeyCommand}
-                  sideButtons={[]}
-                  readOnly={
+      <>
+        <div className="d-flex">
+          <div className="flex-grow-1">
+            {this.state.isSettingsOpen && (
+              <ContentSettings contentId={this.state.note.id} type="note" />
+            )}
+            {!this.state.isSettingsOpen && (
+              <>
+                {/* Note title */}
+                <input
+                  value={this.state.title}
+                  onChange={e => this.handleTitleChange(e.target.value)}
+                  style={{
+                    outline: 'none',
+                    border: 'none',
+                    padding: '8px',
+                    fontSize: '1.75em',
+                    width: '100%'
+                  }}
+                  disabled={
                     typeof this.state.visibility === 'undefined' ||
                     this.state.visibility < 1
                   }
-                  editorEnabled={
-                    !(
+                />
+                {/* Note editor */}
+                <div style={{ width: `${width}px` }}>
+                  <Editor
+                    ref={this.refsEditor}
+                    editorState={this.state.editorState}
+                    onChange={this.onEditorStateChange}
+                    placeholder="Make note of..."
+                    keyBindingFn={this.keyBinding}
+                    handleKeyCommand={this.handleKeyCommand}
+                    sideButtons={[]}
+                    readOnly={
                       typeof this.state.visibility === 'undefined' ||
                       this.state.visibility < 1
-                    )
-                  }
-                />
-              </div>
-            </>
-          )}
-        </div>
-        {/* Save option should be available iff user has edit access */}
-        {!(
-          typeof this.state.visibility === 'undefined' ||
-          this.state.visibility < 1
-        ) && (
-          <div
-            className="d-flex flex-column"
-            style={{ position: 'fixed', right: '0', zIndex: '1000' }}
-          >
-            <Button
-              onClick={this.saveNote}
-              style={{
-                width: '40px',
-                height: '40px',
-                borderRadius: '20px',
-                margin: '8px'
-              }}
+                    }
+                    editorEnabled={
+                      !(
+                        typeof this.state.visibility === 'undefined' ||
+                        this.state.visibility < 1
+                      )
+                    }
+                  />
+                </div>
+              </>
+            )}
+          </div>
+          {/* Save option should be available iff user has edit access */}
+          {!(
+            typeof this.state.visibility === 'undefined' ||
+            this.state.visibility < 1
+          ) && (
+            <div
+              className="d-flex flex-column"
+              style={{ position: 'fixed', right: '0', zIndex: '1000' }}
             >
-              <FaRegSave />
-            </Button>
-            {/* Settings should be accessible only is user is the owner */}
-            {this.props.user.uid === this.state.note.owner && (
               <Button
-                onClick={this.openNoteSettings}
+                onClick={this.saveNote}
                 style={{
                   width: '40px',
                   height: '40px',
@@ -252,12 +247,37 @@ class ViewNote extends Component {
                   margin: '8px'
                 }}
               >
-                <MdSettings />
+                <FaRegSave />
               </Button>
-            )}
-          </div>
-        )}
-      </div>
+              {/* Settings should be accessible only is user is the owner */}
+              {this.props.user.uid === this.state.note.owner && (
+                <Button
+                  onClick={this.openNoteSettings}
+                  style={{
+                    width: '40px',
+                    height: '40px',
+                    borderRadius: '20px',
+                    margin: '8px'
+                  }}
+                >
+                  <MdSettings />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+        <Alert
+          ref="noteSavedAlert"
+          show={this.state.isSuccessAlertOpen}
+          dismissible
+          variant="success"
+          className="fixed-bottom mx-auto my-5 w-75 w-sm-50 w-md-30"
+          style={{ maxWidth: '300px' }}
+          onClose={this.closeNoteSavedAlert}
+        >
+          Note saved
+        </Alert>
+      </>
     );
   }
 }
