@@ -73,7 +73,9 @@ class Scrollspy extends React.Component {
                 to="/notes/show"
               >
                 <FaRegStickyNote width="50px" height="50px" />
-                {open ? <div className="menu-item-text">Notes</div> : null}
+                {open ? (
+                  <div className="menu-item-text">My notebook</div>
+                ) : null}
               </Link>
             </li>
             <li>

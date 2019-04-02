@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Button } from 'react-bootstrap';
 import PropTypes from 'prop-types';
+import { FaFolder, FaStickyNote } from 'react-icons/fa';
 
 import getTimeDiff from '../utils/getTimeDifference';
 
@@ -9,7 +10,7 @@ class NoteCard extends Component {
   static propTypes = {
     id: PropTypes.string.isRequired,
     title: PropTypes.string,
-    type: PropTypes.string.isRequired,
+    type: PropTypes.oneOf(['note', 'folder']).isRequired,
     updated: PropTypes.number,
     visibility: PropTypes.number.isRequired
   };
@@ -23,11 +24,14 @@ class NoteCard extends Component {
   };
 
   render() {
-    // TODO: Update card design acc to the type(note/folder)
     return (
       <Card id={this.props.id} style={{ cursor: 'pointer' }}>
         <Card.Body className="d-flex flex-column">
-          <Card.Title>{this.props.title}</Card.Title>
+          <Card.Title className="d-flex align-items-center">
+            {this.props.type === 'note' ? <FaStickyNote /> : <FaFolder />}
+            <span className="ml-2">{this.props.title}</span>
+          </Card.Title>
+          {/* TODO: In case of note, how card summary */}
           <Button
             id={this.props.id}
             className="ml-auto btn-delete"

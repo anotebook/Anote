@@ -101,7 +101,7 @@ app.get('/meta/:id', auth, (req, res) => {
       /* console.log(result); */
       const response = {
         id: result.id,
-        name: result.owner,
+        name: result.name,
         owner: result.owner,
         // If user id owner or has write access => 1, else 0
         visibility:
