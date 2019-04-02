@@ -44,6 +44,8 @@ class ViewNote extends Component {
     isSuccessAlertOpen: false
   };
 
+  alertTimeout = null;
+
   refsEditor = React.createRef();
 
   // Called when editor's content changes to update the editor's state
@@ -129,7 +131,7 @@ class ViewNote extends Component {
       })
       .then((/* oldNote */) => {
         this.setState({ isSuccessAlertOpen: true });
-        setTimeout(this.closeNoteSavedAlert, 2500);
+        this.alertTimeout = setTimeout(this.closeNoteSavedAlert, 2500);
       })
       .catch((/* err */) => {
         // TODO: Inform user about the error
@@ -173,6 +175,12 @@ class ViewNote extends Component {
     this.setState({ isSuccessAlertOpen: false });
   };
 
+  // When component is about to un-mount, close the success alert
+  componentWillUnmount = () => {
+    clearTimeout(this.alertTimeout);
+    this.closeNoteSavedAlert();
+  };
+
   render() {
     const width = window.innerWidth - (this.props.isMenuDisp ? 250 : 70);
 
@@ -198,6 +206,7 @@ class ViewNote extends Component {
                   />
                   <input
                     value={this.state.title}
+                    placeholder="Untitled"
                     onChange={e => this.handleTitleChange(e.target.value)}
                     style={{
                       outline: 'none',

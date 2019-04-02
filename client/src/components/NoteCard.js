@@ -28,8 +28,14 @@ class NoteCard extends Component {
       <Card id={this.props.id} style={{ cursor: 'pointer' }}>
         <Card.Body className="d-flex flex-column">
           <Card.Title className="d-flex align-items-center">
-            {this.props.type === 'note' ? <FaStickyNote /> : <FaFolder />}
-            <span className="ml-2">{this.props.title}</span>
+            <h5 className="text-overflow-control">
+              {this.props.type === 'note' ? <FaStickyNote /> : <FaFolder />}
+              <span className="ml-2">
+                {this.props.title || (
+                  <span className="text-muted font-italic pr-1">Untitled</span>
+                )}
+              </span>
+            </h5>
           </Card.Title>
           {/* TODO: In case of note, how card summary */}
           <Button

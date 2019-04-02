@@ -14,9 +14,3 @@
 .xlist-add:hover {
   box-shadow: 4px 4px 12px 0 grey;
 }
-
-.text-overflow-control {
-  text-overflow: ellipsis;
-  overflow: hidden;
-  white-space: nowrap;
-}

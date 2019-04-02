@@ -98,7 +98,7 @@ class ShowNotes extends Component {
     if (node.nodeName === 'LI') {
       const create = node.id.split('$')[1];
       this.props.history.push(`/${create}s/create`, {
-        from: this.props.history.location.pathname
+        parent: this.props.match.params.id
       });
     }
   };

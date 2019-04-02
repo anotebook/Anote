@@ -18,13 +18,36 @@ const auth = (req, res, next) => {
       req.user = user;
       next();
     })
-    .catch(() => res.status(404).json({ error: 'authentication failed!' }));
+    .catch(err => {
+      /* console.log(err); */
+      const code = err.code || 500;
+      const reason = err.reason || 'Internal server error';
+      res.status(code).json({ reason });
+    });
 };
 
 /*
  * @bodyparm    owner: uid (owner of the current folder)
  */
 app.post('/create', auth, (req, res) => {
+  // Validate the folder name
+  const title = req.body.title ? req.body.title.trim() : '';
+  // Should not be empty
+  if (title.length === 0) {
+    res.status(400).json({ reason: 'Folder name cannot be empty' });
+    return;
+  }
+  // Should not be `root` and must match requirement
+  if (title === 'root' || !/^[a-zA-Z][-\w ]*$/.test(title)) {
+    res.status(400).send({
+      reason:
+        'Name cannot be "root". Name should start with an alphabet and ' +
+        'can only contain alphanumeric characters, underscores and hyphens'
+    });
+    return;
+  }
+  // Name is ok, continue
+
   const parentFolder = req.body.folder;
   Folder.findOne({
     id: parentFolder,
@@ -37,12 +60,10 @@ app.post('/create', auth, (req, res) => {
       if (!result) {
         res
           .status(400)
-          .json({ Folder: "Requested parent folder doesn't exists" });
+          .json({ reason: "Requested parent folder doesn't exists" });
         return null;
       }
 
-      // parentFolder exisits and we have it's reference
-      const { title } = req.body;
       // Create folder using data extracted
       const createFolder = {
         name: title,
