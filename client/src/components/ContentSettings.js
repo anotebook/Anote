@@ -314,7 +314,11 @@ class FolderSettings extends Component {
               <ListGroup>
                 {this.state.queryXList !== '' && // Don't show suggestions if no input
                   this.state.userXList
-                    .filter(xlist => xlist.name.includes(this.state.queryXList))
+                    .filter(xlist =>
+                      xlist.name
+                        .toLowerCase()
+                        .includes(this.state.queryXList.trim().toLowerCase())
+                    )
                     // Show only 5 results
                     .slice(0, 5)
                     .map(xlist => {

@@ -38,10 +38,22 @@ const auth = (req, res, next) => {
  * @return: A JSON object containing the note created
  */
 app.post('/create', auth, (req, res) => {
+  // Validate the note title
+  const title = req.body.title ? req.body.title.trim() : '';
+  // Should not be `root` and must match requirement
+  if (title === 'root' || !/^[a-zA-Z][-\w ]*$/.test(title)) {
+    res.status(400).send({
+      reason:
+        'Name cannot be "root". Name should start with an alphabet and ' +
+        'can only contain alphanumeric characters, underscores and hyphens'
+    });
+    return;
+  }
+  // Name is ok, continue
+
+  const { folder } = req.body;
   // User data from auth
   const user = req.user;
-  // Note data from request
-  const { title, folder } = req.body;
 
   // Get the folder in which the note has to be created
   Folder.findOne(

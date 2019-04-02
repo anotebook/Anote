@@ -5,6 +5,7 @@ import { withRouter } from 'react-router-dom';
 import { Tabs, Tab, Button, OverlayTrigger, Popover } from 'react-bootstrap';
 import { MdSettings } from 'react-icons/md';
 
+import { FaFolder } from 'react-icons/fa';
 import DisplayNotes from './DisplayNotes';
 import ContentSettings from './ContentSettings';
 
@@ -97,7 +98,7 @@ class ShowNotes extends Component {
     if (node.nodeName === 'LI') {
       const create = node.id.split('$')[1];
       this.props.history.push(`/${create}s/create`, {
-        from: this.props.history.location.pathname
+        parent: this.props.match.params.id
       });
     }
   };
@@ -108,7 +109,14 @@ class ShowNotes extends Component {
     if (visibility < 0) return <h1>Access denied</h1>;
     return (
       <div className="d-flex flex-column h-100">
-        {/* 3 Tabs for note/grp/folder */}
+        {/* Name of the note */}
+        <span className="ml-3 my-2 d-flex align-items-center">
+          <FaFolder />
+          <span className="ml-2 font-size-2" style={{ fontSize: '1.25em' }}>
+            {this.state.folderMeta.name}
+          </span>
+        </span>
+        {/* 3 Tabs for notes,folders and settings */}
         <Tabs defaultActiveKey="notes">
           <Tab eventKey="notes" title="Notes">
             <DisplayNotes type="note" visibility={visibility} />

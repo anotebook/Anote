@@ -7,7 +7,7 @@ import { Editor, createEditorState, keyBindingFn } from 'medium-draft';
 import mediumDraftImporter from 'medium-draft/lib/importer';
 import mediumDraftExporter from 'medium-draft/lib/exporter';
 import { Button, Alert, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import { FaRegSave } from 'react-icons/fa';
+import { FaRegSave, FaStickyNote } from 'react-icons/fa';
 import { MdSettings } from 'react-icons/md';
 
 import ContentSettings from './ContentSettings';
@@ -43,6 +43,8 @@ class ViewNote extends Component {
     isSettingsOpen: false,
     isSuccessAlertOpen: false
   };
+
+  alertTimeout = null;
 
   refsEditor = React.createRef();
 
@@ -129,7 +131,7 @@ class ViewNote extends Component {
       })
       .then((/* oldNote */) => {
         this.setState({ isSuccessAlertOpen: true });
-        setTimeout(this.closeNoteSavedAlert, 2500);
+        this.alertTimeout = setTimeout(this.closeNoteSavedAlert, 2500);
       })
       .catch((/* err */) => {
         // TODO: Inform user about the error
@@ -173,6 +175,12 @@ class ViewNote extends Component {
     this.setState({ isSuccessAlertOpen: false });
   };
 
+  // When component is about to un-mount, close the success alert
+  componentWillUnmount = () => {
+    clearTimeout(this.alertTimeout);
+    this.closeNoteSavedAlert();
+  };
+
   render() {
     const width = window.innerWidth - (this.props.isMenuDisp ? 250 : 70);
 
@@ -191,21 +199,28 @@ class ViewNote extends Component {
             {!this.state.isSettingsOpen && (
               <>
                 {/* Note title */}
-                <input
-                  value={this.state.title}
-                  onChange={e => this.handleTitleChange(e.target.value)}
-                  style={{
-                    outline: 'none',
-                    border: 'none',
-                    padding: '8px',
-                    fontSize: '1.75em',
-                    width: '100%'
-                  }}
-                  disabled={
-                    typeof this.state.visibility === 'undefined' ||
-                    this.state.visibility < 1
-                  }
-                />
+                <div className="d-flex align-items-center">
+                  <FaStickyNote
+                    className="m-2"
+                    style={{ fontSize: '1.25em' }}
+                  />
+                  <input
+                    value={this.state.title}
+                    placeholder="Untitled"
+                    onChange={e => this.handleTitleChange(e.target.value)}
+                    style={{
+                      outline: 'none',
+                      border: 'none',
+                      padding: '8px',
+                      fontSize: '1.75em',
+                      width: '100%'
+                    }}
+                    disabled={
+                      typeof this.state.visibility === 'undefined' ||
+                      this.state.visibility < 1
+                    }
+                  />
+                </div>
                 {/* Note editor */}
                 <div style={{ width: `${width}px` }}>
                   <Editor
