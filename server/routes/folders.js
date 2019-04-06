@@ -19,7 +19,7 @@ const auth = (req, res, next) => {
       next();
     })
     .catch(err => {
-      console.log('auth: ', err);
+      // console.log('auth: ', err);
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });

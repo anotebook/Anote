@@ -1,8 +1,15 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router-dom';
-import { Tabs, Tab, Button, OverlayTrigger, Popover } from 'react-bootstrap';
+import { withRouter, Link } from 'react-router-dom';
+import {
+  Tabs,
+  Tab,
+  Button,
+  OverlayTrigger,
+  Popover,
+  Breadcrumb
+} from 'react-bootstrap';
 import { MdSettings } from 'react-icons/md';
 
 import { FaFolder } from 'react-icons/fa';
@@ -33,7 +40,7 @@ class ShowNotes extends Component {
 
   state = {
     // Meta data for the folder opened
-    folderMeta: {}
+    folderMeta: { path: [] }
   };
 
   // Popover to show what to create - note/grp/folder
@@ -66,11 +73,27 @@ class ShowNotes extends Component {
    * Else, deny access
    */
   getFolderMeta = () => {
+    const folderId = this.props.match.params.id || this.props.user.root;
     axios()
-      .get(
-        `/folders/meta/${this.props.match.params.id || this.props.user.root}`
-      )
-      .then(res => this.setState({ folderMeta: res.data }))
+      // Get meta data about the folder
+      .get(`/folders/meta/${folderId}`)
+      .then(res => {
+        // If fetched successfully, update the state
+        this.setState({ folderMeta: res.data });
+        // After successful meta-data fetch,
+        // get the path from the root folder to this folder (for breadcrumb)
+        axios()
+          .get(`/folders/meta/path/${folderId}`)
+          .then(pathRes => {
+            // Update the path data
+            this.setState(prevState => {
+              return {
+                folderMeta: { ...prevState.folderMeta, path: pathRes.data }
+              };
+            });
+          });
+      })
+      // If error occurs, deny access
       .catch(() => this.setState({ folderMeta: { visibility: -1 } }));
   };
 
@@ -105,17 +128,97 @@ class ShowNotes extends Component {
 
   render() {
     const visibility = this.state.folderMeta.visibility;
+    // If visibility is not defined => loading the data
     if (typeof visibility === 'undefined') return <h1>Please wait!</h1>;
+    // If visibility < 0, user doesn't have access
     if (visibility < 0) return <h1>Access denied</h1>;
+
+    // Get the path of the current folder
+    let path = this.state.folderMeta.path;
+    if (!path || !(path instanceof Array) || path.length === 0) path = null;
+
     return (
       <div className="d-flex flex-column h-100">
-        {/* Name of the note */}
-        <span className="ml-3 my-2 d-flex align-items-center">
+        {/* Path of the note */}
+        <Breadcrumb
+          listProps={{
+            className: 'd-flex align-items-center p-2 m-0'
+          }}
+        >
+          {/* Folder icon */}
           <FaFolder />
-          <span className="ml-2 font-size-2" style={{ fontSize: '1.25em' }}>
-            {this.state.folderMeta.name}
-          </span>
-        </span>
+          {/* If path is available, show the path.
+              Otherwise show the folder name */}
+          {path ? (
+            // Path name is available, show the path
+            <>
+              {/* Show path for small+ devices,
+                  but only name for extra small devices */}
+              <div className="d-none d-sm-block">
+                {/*
+                 * We will show path for only upto 3 folders.
+                 *
+                 * For more nested folders, we show `...`
+                 * to  indicate more folders in between.
+                 * Atleast 1 item is shown as item is guaranteed to present.
+                 * Others depend on the depth of folder
+                 */}
+
+                {/* The origin for the folder
+                 * (root for owner/shared folder for receipants)
+                 */}
+                <Link
+                  to={`/folders/open/${path[0].id}`}
+                  className="p-1"
+                  key={path[0].id}
+                  style={
+                    path.length === 1 ? { color: '#666' } : { color: 'blue' }
+                  }
+                >
+                  / {path[0].name}
+                </Link>
+
+                {/* If path is nested more than 3 levels, we show 3 dots */}
+                <span>{path.length > 3 ? '/ ... ' : ''}</span>
+
+                {/* Show parent of the current folder, if not already shown */}
+                {path.length - 2 > 0 && (
+                  <Link
+                    to={`/folders/open/${path[path.length - 2].id}`}
+                    className="p-1"
+                    key={path[path.length - 2].id}
+                    style={{ color: 'blue' }}
+                  >
+                    / {path[path.length - 2].name}
+                  </Link>
+                )}
+
+                {/* Show current folder, if not already shown */}
+                {path.length - 1 > 0 && (
+                  <Link
+                    to={`/folders/open/${path[path.length - 1].id}`}
+                    className="p-1"
+                    key={path[path.length - 1].id}
+                    style={{ color: '#666' }}
+                  >
+                    / {path[path.length - 1].name}
+                  </Link>
+                )}
+              </div>
+
+              {/* Show name of the folder for extra small devices */}
+              <span className="d-block d-sm-none p-1" style={{ color: '#666' }}>
+                {this.state.folderMeta.name}
+              </span>
+            </>
+          ) : (
+            // Show only folder name if path is not available
+            <span className="p-1" style={{ color: '#666' }}>
+              {this.state.folderMeta.name}
+            </span>
+          )}
+        </Breadcrumb>
+
         {/* 3 Tabs for notes,folders and settings */}
         <Tabs defaultActiveKey="notes">
           <Tab eventKey="notes" title="Notes">

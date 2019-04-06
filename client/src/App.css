@@ -3,6 +3,15 @@
   display: none !important;
 }
 
+a {
+  color: inherit;
+}
+
+a:hover {
+  text-decoration: inherit;
+  color: inherit;
+}
+
 /* App Header style */
 .Appheader {
   background-color: #f0f0f0 !important;
