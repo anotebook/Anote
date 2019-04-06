@@ -56,13 +56,16 @@ class CreateNote extends Component {
     let isNameValid = true;
     // Check if the folder's and note's(if given) name matches the requirements
     if (!(this.props.create === 'note' && title.length === 0))
-      isNameValid = /^[a-zA-Z][-\w ]*$/.test(title) && title !== 'root';
+      isNameValid =
+        /^[a-zA-Z][-\w ]*$/.test(title) &&
+        title !== 'root' &&
+        (this.props.create === 'folder' ? title.length <= 21 : true);
     // Update the validation status
     this.setState({
       error: `${
         isNameValid
           ? ''
-          : 'Name cannot be "root". Name should start with an alphabet and ' +
+          : 'Name should be of less than 22 characters. Name cannot be "root". Name should start with an alphabet and ' +
             'can only contain alphanumeric characters, underscores and hyphens'
       }`
     });
@@ -84,7 +87,7 @@ class CreateNote extends Component {
       .then(res => {
         const created = res.data;
         const route = `${this.props.create}s/open`;
-        this.props.history.push(`/${route}/${created.id}`, { created });
+        this.props.history.replace(`/${route}/${created.id}`, { created });
       })
       .catch(err => {
         if (err.response) this.setState({ error: err.response.data.reason });
