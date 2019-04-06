@@ -19,7 +19,7 @@ const auth = (req, res, next) => {
       next();
     })
     .catch(err => {
-      /* console.log(err); */
+      console.log('auth: ', err);
       const code = err.code || 500;
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
@@ -89,6 +89,72 @@ app.post('/create', auth, (req, res) => {
       const reason = err.reason || 'Internal server error';
       res.status(code).json({ reason });
     });
+});
+
+/*
+ * Return the path array which has path from current to root
+ */
+app.get('/meta/path/:id', auth, (req, res) => {
+  Folder.findOne(
+    {
+      id: req.params.id,
+      $or: [{ owner: req.user.uid }, { 'xlist.email': req.user.email }]
+    },
+    { path: 1, _id: 0 }
+  )
+    .then(folder => {
+      if (!folder) {
+        res
+          .status(404)
+          .send("No such folder exists, OR you don't have access to this");
+        return null;
+      }
+      const folderIds = folder.path.split('$');
+      return Folder.find(
+        {
+          $query: {
+            id: { $in: folderIds },
+            $or: [{ 'xlist.email': req.user.email }, { owner: req.user.uid }]
+          },
+          $orderby: { path: 1 }
+        },
+        { name: 1, id: 1, _id: 0, path: 1 }
+      );
+    })
+    .then(folders => {
+      // console.log(folders);
+      if (!folders) return;
+      const nesting = folders.map(x => {
+        return {
+          // the depth of the current folder
+          // much much faster than prefix matching ;)
+          depth: x.path.split('$').length,
+          name: x.name,
+          id: x.id
+        };
+      });
+
+      nesting.reverse();
+      let current = nesting[0].depth;
+      const result = [];
+      result.push({
+        name: nesting[0].name,
+        id: nesting[0].id
+      });
+
+      for (let j = 1; j < nesting.length; j += 1) {
+        if (nesting[j].depth !== current - 1) break;
+
+        result.push({
+          name: nesting[j].name,
+          id: nesting[j].id
+        });
+        current = nesting[j].depth;
+      }
+
+      res.send(result.reverse());
+    })
+    .catch(err => res.status(500).send(err));
 });
 
 /*
