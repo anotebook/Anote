@@ -53,63 +53,15 @@ app.get('/shared/with-me/:type', auth, (req, res) => {
     $orderby: { path: 1 }
   });
   const notesPromise = Notes.find({
-    $query: {
-      xlist: { $elemMatch: { visibility: type, email: req.user.email } }
-    },
-    $orderby: { path: 1 }
+    xlist: { $elemMatch: { visibility: type, email: req.user.email } }
   });
 
   Promise.all([folderPromise, notesPromise])
     .then(([folders, notes]) => {
-      const n = folders.length;
       let result = [];
-      let prvString = '';
-      for (let i = 0; i < n; i += 1) {
-        if (i === 0) {
-          prvString = folders[i].path;
-          result.push(folders[i]);
-          continue;
-        }
-        const currString = folders[i].path;
-        if (currString.length < prvString.length) {
-          prvString = currString;
-          result.push(folders[i]);
-          continue;
-        }
-        if (currString.length === prvString.length) {
-          const prvPath = prvString.split('$');
-          const curPath = currString.split('$');
-          if (prvPath[prvPath.length - 2] === curPath[curPath.length - 2]) {
-            // still the parent is same.
-            // so, update the prvString(parent - path - string)
-          } else prvString = currString;
-
-          result.push(folders[i]);
-          continue;
-        }
-        let prefix = 1;
-        for (let j = 0; j < prvString.length; j += 1) {
-          if (prvString[j] !== currString[j]) {
-            prefix = 0;
-            break;
-          }
-        }
-        if (prefix === 0) {
-          result.push(folders[i]);
-          prvString = currString;
-          continue;
-        }
-
-        let nestingLevel = 0;
-        for (let j = prvString.length; j < currString.length; j += 1)
-          if (currString[j] === '$') {
-            nestingLevel += 1;
-            if (nestingLevel > 1) break;
-          }
-        if (nestingLevel > 1) result.push(folders[i]);
-
-        prvString = currString;
-      }
+      const t = new Trie();
+      for (let i = 0; i < folders.length; i += 1)
+        if (t.addString(folders[i].path)) result.push(folders[i]);
 
       // for (let i = 0; i < result.length; i += 1) console.log(result[i]);
 
@@ -145,6 +97,59 @@ app.get('/shared/with-me/:type', auth, (req, res) => {
     .catch(err => res.status(500).send(err));
   return 0;
 });
+
+class Node {
+  constructor() {
+    this.ed = 0;
+    this.child = {};
+  }
+}
+
+class Trie {
+  constructor() {
+    this.root = new Node();
+  }
+
+  addToTrie(
+    string,
+    pos,
+    isPrefix,
+    hasNewNodes,
+    currentDepth,
+    lastDepth,
+    currentNode
+  ) {
+    if (pos === string.length) {
+      currentNode.ed = currentDepth;
+      if (isPrefix && currentDepth === lastDepth + 1) return 0;
+      return 1;
+    }
+    const currentCharacter = string[pos];
+    lastDepth = Math.max(lastDepth, currentNode.ed);
+
+    if (currentCharacter === '$' && !isPrefix && hasNewNodes <= 1) isPrefix = 1;
+    if (currentCharacter === '$') currentDepth += 1;
+
+    if (!currentNode.child[currentCharacter]) {
+      currentNode.child[currentCharacter] = new Node();
+      hasNewNodes += 1;
+    }
+
+    return this.addToTrie(
+      string,
+      pos + 1,
+      isPrefix,
+      hasNewNodes,
+      currentDepth,
+      lastDepth,
+      currentNode.child[currentCharacter]
+    );
+  }
+
+  addString(string) {
+    return this.addToTrie(string, 0, 0, 0, 1, 0, this.root);
+  }
+}
 
 /*
  * @route     /access/:type/:id
