@@ -132,6 +132,7 @@
     "react/jsx-boolean-value": 1,
     "jsx-a11y/no-noninteractive-element-interactions": 0,
     "no-underscore-dangle": 0,
-    "react/jsx-wrap-multilines": 0
+    "react/jsx-wrap-multilines": 0,
+    "no-continue": 0
   }
 }

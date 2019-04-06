@@ -68,14 +68,23 @@ app.get('/shared/with-me/:type', auth, (req, res) => {
         if (i === 0) {
           prvString = folders[i].path;
           result.push(folders[i]);
-          // eslint-disable-next-line no-continue
           continue;
         }
         const currString = folders[i].path;
-        if (currString.length <= prvString.length) {
+        if (currString.length < prvString.length) {
           prvString = currString;
           result.push(folders[i]);
-          // eslint-disable-next-line no-continue
+          continue;
+        }
+        if (currString.length === prvString.length) {
+          const prvPath = prvString.split('$');
+          const curPath = currString.split('$');
+          if (prvPath[prvPath.length - 2] === curPath[curPath.length - 2]) {
+            // still the parent is same.
+            // so, update the prvString(parent - path - string)
+          } else prvString = currString;
+
+          result.push(folders[i]);
           continue;
         }
         let prefix = 1;
@@ -88,7 +97,6 @@ app.get('/shared/with-me/:type', auth, (req, res) => {
         if (prefix === 0) {
           result.push(folders[i]);
           prvString = currString;
-          // eslint-disable-next-line no-continue
           continue;
         }
 
