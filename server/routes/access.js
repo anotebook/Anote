@@ -306,7 +306,7 @@ app.post('/:type/:access/:action/:id', auth, (req, res) => {
         );
       } else {
         notesUpdatePromise = Notes.updateOne(
-          { owner: req.user.uid, path: { $regex: regex } },
+          { owner: req.user.uid, id: req.params.id },
           { $set: { xlist: searchResult.xlist.slice() } }
         );
         foldersUpdatePromise = new Promise(resolve => {
